@@ -228,14 +228,23 @@ public class SQLProcessor {
         return results;
     }
     public void add(String tableName, String[][] table) throws Exception {
+        statement = conn.prepareStatement("set foreign_key_checks = 0");
+        statement.execute();
         String toExecute = "";
         switch(tableName) {
         case "Faculty Member":
-           toExecute = "insert into faculty (lastName, firstName, email, personsRole, dept_div, BIPOC, gender) values ";
+           toExecute = "insert into faculty (lastName, firstName, email, personsRole, dept_div, employmentID, BIPOC, gender) values ";
             for(int i = 0; i < table.length; i++) {
                 toExecute += "(";
                 for(int u = 0; u < table[i].length; u++) {
-                    if(u % 7 == 5 && !(table[i][u].equals("1") || table[i][u].equals("0"))) {
+                    if(u % 8 == 5) {
+                        //try a parseInt, throw when failed for all int values
+                        if(table[i][u].equals("null") || table[i][u].equals("0") || table[i][u].equals("")) {
+                        toExecute += "NULL, ";
+                        } else {
+                        toExecute += table[i][u] + ", ";
+                        }
+                    } else if(u % 8 == 6 && !(table[i][u].equals("1") || table[i][u].equals("0"))) {
                         toExecute += 0 + ",";
                     } else if(u == table[i].length - 1) {
                         toExecute += "\"" + table[i][u] + "\"" + ")";
@@ -244,7 +253,7 @@ public class SQLProcessor {
                     }
                 }
                 if(i < table.length - 1) {
-                    toExecute += ",";
+                    toExecute += ", ";
                 }
             }
         break; //7
@@ -262,7 +271,7 @@ public class SQLProcessor {
                     }
                 }
                 if(i < table.length - 1) {
-                    toExecute += ",";
+                    toExecute += ",  ";
                 }
             }
         break; //5
@@ -278,7 +287,7 @@ public class SQLProcessor {
                     }
                 }
                 if(i < table.length - 1) {
-                    toExecute += ",";
+                    toExecute += ", ";
                 }
             }
         break; //2
@@ -294,7 +303,7 @@ public class SQLProcessor {
                     }
                 }
                 if(i < table.length - 1) {
-                    toExecute += ",";
+                    toExecute += ", ";
                 }
             }
         break; //5
@@ -317,7 +326,7 @@ public class SQLProcessor {
                 } 
                 }
                 if(i < table.length - 1) {
-                    toExecute += ",";
+                    toExecute += ", ";
                 }
             }
         break; //2
@@ -339,7 +348,7 @@ public class SQLProcessor {
                 } 
                 }
                 if(i < table.length - 1) {
-                    toExecute += ",";
+                    toExecute += ", ";
                 }
             }
         break; //2
@@ -361,13 +370,16 @@ public class SQLProcessor {
                 } 
                 }
                 if(i < table.length - 1) {
-                    toExecute += ",";
+                    toExecute += ", ";
                 }
             }
         break; //2 
         }
+        //System.out.println(toExecute);
         this.statement = conn.prepareStatement(toExecute);
         this.statement.execute();
+        statement = conn.prepareStatement("set foreign_key_checks = 1");
+        statement.execute();
     }
     public int getIndex() {
         return index;

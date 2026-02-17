@@ -14,6 +14,7 @@ public class DeleteGUI extends TemplateGUI {
     JButton confirm;
     JButton deleteAll;
     boolean first;
+    JLabel exceptionMessenger;
     public DeleteGUI() throws Exception {
         super("Delete");
         super.window.setLayout(new GridBagLayout());
@@ -35,7 +36,7 @@ public class DeleteGUI extends TemplateGUI {
                 try{
                 setCheckBoxes();
                 } catch (Exception e) {
-                    System.err.println(e);
+                    setExceptionMessenge(e.getMessage());
                 }
             }
         });
@@ -45,21 +46,25 @@ public class DeleteGUI extends TemplateGUI {
         this.gbc = new GridBagConstraints();
         this.gbc.insets = new Insets(5, 5, 5, 5);
         this.gbc.gridx = 0;
+        this.gbc.gridy = 1;
         super.window.getContentPane().add(this.deletionSpot, gbc);
+        this.gbc.gridy = 0; 
+        this.exceptionMessenger = new JLabel();
+        super.window.getContentPane().add(this.exceptionMessenger, gbc);
         this.gbc.gridx = 1;
         super.window.getContentPane().add(this.typeSelectionBox, gbc);
         this.checkBoxesonScreen = new ArrayList<JCheckBox>();
         this.sQLpro = new SQLProcessor();
         this.confirm = new JButton("Confirm");
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         this.confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                 deleteChecked();
                 } catch (Exception ex) {
-                    System.err.println(ex);
+                    setExceptionMessenge(ex.getMessage());
                 }
             }
         });
@@ -71,7 +76,8 @@ public class DeleteGUI extends TemplateGUI {
                 try {
                 deleteAllData(); //on error checking stage, apply a pop-up that says "Are you sure about deleting all that data?"
                 } catch (Exception e) {
-                    System.err.println(e);
+                    //System.err.println(e);
+                    setExceptionMessenge(e.getMessage());
                 }
         }
         });
@@ -90,7 +96,7 @@ public class DeleteGUI extends TemplateGUI {
        if(tobeSplit.equals("")) {
             JPanel panel = new JPanel();
             deletionSpot.setViewportView(panel);;
-            throw new Exception("Cannot generate check boxes for an empty table!");
+            throw new FDTException("Cannot show data to select for an empty table!");
        }
        String[] checkBoxText = tobeSplit.split("\n");
        JPanel panel = new JPanel();
@@ -125,7 +131,7 @@ public class DeleteGUI extends TemplateGUI {
     public void deleteAllData() throws Exception {
         String graph = sQLpro.showSpecific((String)this.typeSelectionBox.getSelectedItem());
        if(graph.equals("")) {
-            throw new Exception("Cannot delete data from an empty table!");
+            throw new FDTException("Cannot delete data from an empty table!");
        }
         int confirm = JOptionPane.showConfirmDialog(null, 
             "Are you sure you want to delete all your data for " + getDataDeletedType() + "?", "Confirm Deletion?",
@@ -150,5 +156,8 @@ public class DeleteGUI extends TemplateGUI {
             }
         }
         setCheckBoxes(); 
+    }
+    public void setExceptionMessenge(String exception) {
+        this.exceptionMessenger.setText(exception);
     }
 }

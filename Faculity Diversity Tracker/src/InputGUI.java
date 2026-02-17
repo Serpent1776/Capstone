@@ -17,9 +17,10 @@ public class InputGUI {
     SQLProcessor SQLpro;
     JLabel[] onGui;
     JScrollPane scrollWindow;
+    JLabel exceptionMessenger;
     public InputGUI() throws Exception {
         this.inputType = "Faculty Member";
-        this.onGui = new JLabel[7];
+        this.onGui = new JLabel[8];
         this.SQLpro = new SQLProcessor();
         this.inputWindow = new JFrame("Input");
         this.inputWindow.setSize(1500, 1000);
@@ -59,7 +60,7 @@ public class InputGUI {
                 int num = dropDown.getSelectedIndex();
                 String ddString = inputTypes[num];
                 switch (num) {
-                    case 0: num = 7; break;
+                    case 0: num = 8; break;
                     case 1: num = 5; break;
                     case 4: num = 5; break;
                     default: num = 2; break;
@@ -83,7 +84,7 @@ public class InputGUI {
                 try {
                 SQLpro.add(inputType, listgetString());
                 } catch (Exception ex) {
-                    System.out.println(ex.getLocalizedMessage());
+                    setExceptionMessenge(ex.getMessage());
                 }
             }
         });
@@ -97,14 +98,17 @@ public class InputGUI {
         this.gbc.gridy = 1500;
         this.gbc.gridx = 1000;
         this.inputWindow.add(addButton, this.gbc);
-        this.inputTexts = new JTextArea[10][7];
+        this.inputTexts = new JTextArea[10][8];
         this.ddSize = "1";
-        this.ddTypeSize = 7;
+        this.ddTypeSize = 8;
         this.scrollWindow = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         this.gbc.gridx = 0;
-        this.gbc.gridy = 3;
+        this.gbc.gridy = 1;
         this.scrollWindow.setPreferredSize(new Dimension(1000, 850));
         this.inputWindow.add(scrollWindow, this.gbc);
+        this.exceptionMessenger = new JLabel();
+        this.gbc.gridy = 0;
+        this.inputWindow.add(this.exceptionMessenger, this.gbc);
         listSummon();
         //this.inputWindow.getContentPane().add(this.dropDownSize, BorderLayout.NORTH);
         //this.inputWindow.getContentPane().add(this.dropDownType, BorderLayout.NORTH);
@@ -154,13 +158,17 @@ public class InputGUI {
             panel.add(dept_div, gbc);
             this.onGui[4] = dept_div;
             gbc.gridx++;
+            JLabel epID = new JLabel("Employment ID");
+            panel.add(epID, gbc);
+            this.onGui[5] = epID;
+            gbc.gridx++;
             JLabel bIPOC = new JLabel("BIPOC?");
             panel.add(bIPOC, gbc);
-            this.onGui[5] = bIPOC;
+            this.onGui[6] = bIPOC;
             gbc.gridx++;
             JLabel gender = new JLabel("Gender");
             panel.add(gender, gbc);
-            this.onGui[6] = gender;
+            this.onGui[7] = gender;
             break; //7
             case "Event": 
             JLabel eN = new JLabel("Name of Event");
@@ -281,5 +289,7 @@ public class InputGUI {
     public String getInputType() {
         return inputType;
     }
-    
+    public void setExceptionMessenge(String messenge) {
+        this.exceptionMessenger.setText(messenge);
+    }
 }

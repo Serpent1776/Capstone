@@ -22,6 +22,7 @@ public class EditGUI extends TemplateGUI {
     SQLProcessor sQLpro;
     JButton confirm;
     boolean first;
+    JLabel exceptionMessenger;
     public EditGUI() throws Exception {
         super("Editing");
         //this.window = new JFrame("Editing");
@@ -38,27 +39,30 @@ public class EditGUI extends TemplateGUI {
         this.editTypeSelector = new JComboBox<String>(editTypes);
         this.editTypeSelector.setFont(new Font("Cambria", 4, 16));
         this.editTypeSelector.setPreferredSize(new Dimension(175, 20));
-        this.onGui = new JLabel[8];
+        this.onGui = new JLabel[9];
         this.editTypeSelector.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
               try {
                 graphToEditInputs();  
               } catch (Exception ex) {
-                System.err.println(ex);
+                setExceptionMessenge(ex.getMessage());
               } 
             }
         });
         this.template = new JTextArea();
-        this.template.setPreferredSize(new Dimension(300, 29));
+        this.template.setPreferredSize(new Dimension(600, 29));
         this.template.setFont(new Font("Cambria", 4, 24));
         this.template.setBounds(100, 29, 100, 29);
         this.textAreas = new ArrayList<JTextArea>(1000000);
         this.sQLpro = new SQLProcessor();
         this.gbc = new GridBagConstraints();
         this.gbc.insets = new Insets(5, 5, 5, 5);
-        this.gbc.gridx = 8;
+        this.gbc.gridx = 1;
         super.window.getContentPane().add(editTypeSelector, gbc);
+        this.gbc.gridx = 0;
+        this.exceptionMessenger = new JLabel();
+        super.window.getContentPane().add(this.exceptionMessenger, gbc);
         this.scrollGlass = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.scrollGlass.setPreferredSize(new Dimension(1000, 850));
         this.scrollGlass.getVerticalScrollBar().setPreferredSize(new Dimension(20, 850));
@@ -72,7 +76,7 @@ public class EditGUI extends TemplateGUI {
                 try {
                 confirmEdits();
                 } catch(Exception e) {
-                    System.err.println(e);
+                    setExceptionMessenge(e.getMessage());
                 }
             }
         });
@@ -92,7 +96,7 @@ public class EditGUI extends TemplateGUI {
         if(toBeSplit.equals("")) {
             JPanel panel = new JPanel();
             scrollGlass.setViewportView(panel);;
-            throw new Exception("Cannot edit an empty table!");
+            throw new FDTException("Cannot edit an empty table!");
        }
         String[] firstSplit = toBeSplit.split("\n");
         this.gbc.gridx = 0;
@@ -107,7 +111,7 @@ public class EditGUI extends TemplateGUI {
             case "Event Attendence": div = 2; break;
             //case "Certificate & Event": div = 2; break;
             default:
-                throw new Exception("Certificate & Event is uneditable, use Delete and Add to edit!");
+                throw new FDTException("Certificate & Event is uneditable, use Delete and Add to edit!");
         }
         String[][] secondSplit = new String[firstSplit.length][div];
         for(int i = 0; i < firstSplit.length; i++) {
@@ -142,13 +146,17 @@ public class EditGUI extends TemplateGUI {
             panel.add(dept_div, gbc);
             this.onGui[5] = dept_div;
             gbc.gridx++;
+            JLabel epID = new JLabel("Employment ID");
+            panel.add(epID, gbc);
+            this.onGui[6] = epID;
+            gbc.gridx++;
             JLabel bIPOC = new JLabel("BIPOC?");
             panel.add(bIPOC, gbc);
-            this.onGui[6] = bIPOC;
+            this.onGui[7] = bIPOC;
             gbc.gridx++;
             JLabel gender = new JLabel("Gender");
             panel.add(gender, gbc);
-            this.onGui[7] = gender;
+            this.onGui[8] = gender;
             break; //7
             case "Event": 
             JLabel eID = new JLabel("Event ID");
@@ -307,5 +315,8 @@ public class EditGUI extends TemplateGUI {
     }
     public String getEditedDataType() {
         return (String)this.editTypeSelector.getSelectedItem();
+    }
+    public void setExceptionMessenge(String messenge) {
+        this.exceptionMessenger.setText(messenge);
     }
 }
