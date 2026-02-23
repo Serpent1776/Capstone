@@ -78,8 +78,8 @@ public class DataChecker {
         }
     }
     public static void CheckString(String str) throws FDTException {
-        if(str.contains("*") || str.contains("(") || str.contains(")")) {
-            throw new FDTException("Don't include asterisks or parentheses in your Strings.");
+        if(str.contains("*") || str.contains("(") || str.contains(")") || str.contains("~")) {
+            throw new FDTException("Don't include asterisks, parentheses, or tildas in your Strings.");
         }
         if(str.contains("\"") && str.split("\"").length % 2 == 1) {
             throw new FDTException("Make sure your quotes are balanced.");
