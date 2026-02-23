@@ -34,6 +34,7 @@ public class DeleteGUI extends TemplateGUI {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 try{
+                setExceptionMessenge("");
                 setCheckBoxes();
                 } catch (Exception e) {
                     setExceptionMessenge(e.getMessage());
@@ -62,6 +63,7 @@ public class DeleteGUI extends TemplateGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                setExceptionMessenge("");
                 deleteChecked();
                 } catch (Exception ex) {
                     setExceptionMessenge(ex.getMessage());
@@ -74,6 +76,7 @@ public class DeleteGUI extends TemplateGUI {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 try {
+                setExceptionMessenge("");
                 deleteAllData(); //on error checking stage, apply a pop-up that says "Are you sure about deleting all that data?"
                 } catch (Exception e) {
                     //System.err.println(e);
@@ -134,7 +137,7 @@ public class DeleteGUI extends TemplateGUI {
             throw new FDTException("Cannot delete data from an empty table!");
        }
         int confirm = JOptionPane.showConfirmDialog(null, 
-            "Are you sure you want to delete all your data for " + getDataDeletedType() + "?", "Confirm Deletion?",
+            "Are you sure you want to delete all your data for " + getDataDeletedType() + "?", "Confirm deletion?",
              JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             sQLpro.deleteAll(getDataDeletedType());

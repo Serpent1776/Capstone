@@ -21,7 +21,8 @@ public class SQLProcessor {
         results += this.rSet.getString(4) + " ";
         results += this.rSet.getString(5) + " ";
         results += this.rSet.getString(6) + " ";
-        //o += resultSet.getString(7) + " ";
+        results += this.rSet.getString(7) + " ";
+        results += this.rSet.getString(8) + " ";
         results += this.rSet.getString(9) + " ";
         this.index++;
         results += "\n";
@@ -245,7 +246,7 @@ public class SQLProcessor {
                         toExecute += table[i][u] + ", ";
                         }
                     } else if(u % 8 == 6 && !(table[i][u].equals("1") || table[i][u].equals("0"))) {
-                        toExecute += 0 + ",";
+                        toExecute += "NULL, ";
                     } else if(u == table[i].length - 1) {
                         toExecute += "\"" + table[i][u] + "\"" + ")";
                     } else {
@@ -389,26 +390,28 @@ public class SQLProcessor {
             case "Faculty Member":
                 statement = conn.prepareStatement("set foreign_key_checks = 0");
                 statement.execute();
-                for(int i = 1; i < string2D.length+1; i++) {
+                for(int i = 0; i < string2D.length; i++) {
                     String stmt = "";
                     stmt += "update faculty ";
-                    stmt += "set lastName = \"" + string2D[i - 1][0] + "\", ";
-                    stmt += "firstName = \"" + string2D[i - 1][1] + "\", ";
-                    stmt += "email = \"" + string2D[i - 1][2] + "\", ";
-                    stmt += "personsRole = \"" + string2D[i - 1][3] + "\", ";
-                    stmt += "dept_div = \"" + string2D[i - 1][4] + "\", ";
-                    if(string2D[i - 1][5].equals("0") || string2D[i - 1][5].equals("null") || string2D[i - 1][5].equals(" ") || string2D[i - 1][5].equals("")) {
+                    stmt += "set lastName = \"" + string2D[i][1] + "\", ";
+                    stmt += "firstName = \"" + string2D[i][2] + "\", ";
+                    stmt += "email = \"" + string2D[i][3] + "\", ";
+                    stmt += "personsRole = \"" + string2D[i][4] + "\", ";
+                    stmt += "dept_div = \"" + string2D[i][5] + "\", ";
+                    if(string2D[i][6].equals("0") || string2D[i][6].equals("null")
+                         || string2D[i][6].equals(" ") || string2D[i][6].equals("")) {
                         stmt += "employmentID = NULL, ";
                     } else {
-                        stmt += "employmentID = " + string2D[i - 1][5] + ", ";
+                        stmt += "employmentID = " + string2D[i][6] + ", ";
                     }
-                     if(string2D[i - 1][6].equals("0") || string2D[i - 1][6].equals("null") || string2D[i - 1][6].equals(" ") || string2D[i - 1][6].equals("")) {
+                     if(string2D[i][7].equals("null") ||
+                      string2D[i][7].equals(" ") || string2D[i][7].equals("")) {
                         stmt += "BIPOC = NULL, ";
                     } else {
-                        stmt += "BIPOC = " + string2D[i - 1][6] + ", ";
+                        stmt += "BIPOC = " + string2D[i][7] + ", ";
                     }
-                    stmt += "gender = \"" + string2D[i - 1][7] + "\"";
-                    stmt += " where id = " + i + ";";
+                    stmt += "gender = \"" + string2D[i][8] + "\"";
+                    stmt += " where id = " + string2D[i][0] + ";";
                     //System.out.println(stmt);
                     statement = conn.prepareStatement(stmt);
                     statement.execute();
@@ -417,36 +420,37 @@ public class SQLProcessor {
                 statement.execute();
                 break;
             case "Event":
-                for(int i = 1; i < string2D.length+1; i++) {
+                for(int i = 0; i < string2D.length; i++) {
                     String stmt = "";
                     stmt += "update facultyevent ";
-                    stmt += "set eventName = \"" + string2D[i - 1][0] + "\", ";
-                    stmt += "eventDate = \"" + string2D[i - 1][1] + "\", ";
-                    stmt += "eventType = \"" + string2D[i - 1][2] + "\", ";
-                    stmt += "requirement = \"" + string2D[i - 1][3] + "\"";
-                    stmt += " where id = " + i + ";";
+                    stmt += "set eventName = \"" + string2D[i][1] + "\", ";
+                    stmt += "eventDate = \"" + string2D[i][2] + "\", ";
+                    stmt += "eventType = \"" + string2D[i][3] + "\", ";
+                    stmt += "requirement = \"" + string2D[i][4] + "\", ";
+                     stmt += "notes = \"" + string2D[i][5] + "\"";
+                    stmt += " where id = " + string2D[i][0] + ";";
                     statement = conn.prepareStatement(stmt);
                     statement.execute();
                 }
                 break;
             case "Certificate":
-                for(int i = 1; i < string2D.length+1; i++) {
+                for(int i = 0; i < string2D.length; i++) {
                     String stmt = "";
                     stmt += "update certificate ";
-                    stmt += "set certificateName = \"" + string2D[i - 1][0] + "\", ";
-                    stmt += "certType = \"" + string2D[i - 1][1] + "\"";
-                    stmt += " where id = " + i + ";";
+                    stmt += "set certificateName = \"" + string2D[i][1] + "\", ";
+                    stmt += "certType = \"" + string2D[i][2] + "\"";
+                    stmt += " where id = " + string2D[i][0] + ";";
                     statement = conn.prepareStatement(stmt);
                     statement.execute();
                 }
                 break;
             case "Employment":
-                for(int i = 1; i < string2D.length+1; i++) {
+                for(int i = 0; i < string2D.length; i++) {
                     String stmt = "";
                     stmt += "update employment ";
-                    stmt += "set applicationID =" + string2D[i - 1][0] + "\", ";
-                    stmt += "employmentDesc = \"" + string2D[i - 1][1] + "\"";
-                    stmt += " where id = " + i + ";";
+                    stmt += "set applicationID = " + string2D[i][1] + "\", ";
+                    stmt += "employmentDesc = \"" + string2D[i][2] + "\"";
+                    stmt += " where id = " + string2D[i][0] + ";";
                     statement = conn.prepareStatement(stmt);
                     statement.execute();
                 }
@@ -454,26 +458,26 @@ public class SQLProcessor {
             case "Faculty & Certificate":
                 statement = conn.prepareStatement("set foreign_key_checks = 0");
                 statement.execute();
-                for(int i = 1; i < string2D.length+1; i++) {
+                for(int i = 0; i < string2D.length; i++) {
                     String stmt = "";
                     stmt += "update facultycert set ";
-                    //stmt += "set personID =" + string2D[i - 1][0] + "\", ";
-                    if(!(string2D[i - 1][1].equals("null") || string2D[i - 1][1].equals(""))) {
-                        stmt += "bronzeDate = \"" + string2D[i - 1][1] + "\", ";
+                    //stmt += "set personID =" + string2D[i][0] + "\", ";
+                    if(!(string2D[i][1].equals("null") || string2D[i][1].equals(""))) {
+                        stmt += "bronzeDate = \"" + string2D[i][1] + "\", ";
                     } else {
                         stmt += "bronzeDate = NULL, ";
                     }
-                    if(!(string2D[i - 1][2].equals("null") || string2D[i - 1][2].equals(""))) {
-                        stmt += "silverDate = \"" + string2D[i - 1][2] + "\", ";
+                    if(!(string2D[i][2].equals("null") || string2D[i][2].equals(""))) {
+                        stmt += "silverDate = \"" + string2D[i][2] + "\", ";
                     } else {
                         stmt += "silverDate = NULL, ";
                     }
-                     if(!(string2D[i - 1][3].equals("null") || string2D[i - 1][3].equals(""))) {
-                        stmt += "goldDate =" + string2D[i - 1][3] + "\", ";
+                     if(!(string2D[i][3].equals("null") || string2D[i][3].equals(""))) {
+                        stmt += "goldDate = \"" + string2D[i][3] + "\"";
                     } else {
                         stmt += "goldDate = NULL ";
                     }
-                    stmt += "where PersonID = " + string2D[i-1][0] + " and " + "certID = " + string2D[i-1][0] + ";";
+                    stmt += "where PersonID = " + string2D[i][0] + " and " + "certID = " + string2D[i][4] + ";";
                     //System.out.println(stmt);
                     statement = conn.prepareStatement(stmt);
                     statement.execute();
@@ -484,12 +488,12 @@ public class SQLProcessor {
             case "Event Attendence": 
                 statement = conn.prepareStatement("set foreign_key_checks = 0");
                 statement.execute();
-                for(int i = 1; i < string2D.length+1; i++) {
+                for(int i = 0; i < string2D.length; i++) {
                     String stmt = "";
                     stmt += "update attendid ";
-                    stmt += "set facultyID = " + string2D[i - 1][0] + ", ";
-                    stmt += "eventID = " + string2D[i - 1][1] + " ";
-                    stmt += "where attendID = " + i + ";";
+                    stmt += "set facultyID = " + string2D[i][1] + ", ";
+                    stmt += "eventID = " + string2D[i][2] + " ";
+                    stmt += "where attendID = " + string2D[i][0] + ";";
                     //System.out.println(stmt);
                     statement = conn.prepareStatement(stmt);
                     statement.execute();

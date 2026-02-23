@@ -44,6 +44,7 @@ public class EditGUI extends TemplateGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
               try {
+                setExceptionMessenge("");
                 graphToEditInputs();  
               } catch (Exception ex) {
                 setExceptionMessenge(ex.getMessage());
@@ -74,6 +75,7 @@ public class EditGUI extends TemplateGUI {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 try {
+                setExceptionMessenge("");
                 confirmEdits();
                 } catch(Exception e) {
                     setExceptionMessenge(e.getMessage());
@@ -95,7 +97,7 @@ public class EditGUI extends TemplateGUI {
         String toBeSplit = this.sQLpro.showSpecific(type, "~");
         if(toBeSplit.equals("")) {
             JPanel panel = new JPanel();
-            scrollGlass.setViewportView(panel);;
+            scrollGlass.setViewportView(panel);
             throw new FDTException("Cannot edit an empty table!");
        }
         String[] firstSplit = toBeSplit.split("\n");
@@ -103,12 +105,12 @@ public class EditGUI extends TemplateGUI {
         this.gbc.gridy = 0;
         int div = 0;
         switch(type) {
-            case "Faculty Member": div = 8; break;
-            case "Event": div = 5; break;
-            case "Certificate": div = 2; break;
-            case "Employment": div = 2; break;
+            case "Faculty Member": div = 9; break;
+            case "Event": div = 6; break;
+            case "Certificate": div = 3; break;
+            case "Employment": div = 3; break;
             case "Faculty & Certificate": div = 5; break;
-            case "Event Attendence": div = 2; break;
+            case "Event Attendence": div = 3; break;
             //case "Certificate & Event": div = 2; break;
             default:
                 throw new FDTException("Certificate & Event is uneditable, use Delete and Add to edit!");
@@ -231,13 +233,17 @@ public class EditGUI extends TemplateGUI {
             this.onGui[4] = cName;
             break; //5
             case "Event Attendence":
+            JLabel ad = new JLabel("Attend ID");
+            panel.add(ad, gbc);
+            this.onGui[0] = ad;
+            gbc.gridx++;
             JLabel lNs = new JLabel("Staff ID");
             panel.add(lNs, gbc);
-            this.onGui[0] = lNs;
+            this.onGui[1] = lNs;
             gbc.gridx++;
             JLabel nE = new JLabel("Event ID");
             panel.add(nE, gbc);
-            this.onGui[1] = nE;
+            this.onGui[2] = nE;
             break; //2
             case "Certificate & Event":
             JLabel cne = new JLabel("Certificate ID");
@@ -294,20 +300,42 @@ public class EditGUI extends TemplateGUI {
         String type = (String)this.editTypeSelector.getSelectedItem();
         int div = 0;
         switch(type) {
-            case "Faculty Member": div = 8; break;
-            case "Event": div = 5; break;
-            case "Certificate": div = 2; break;
-            case "Employment": div = 2; break;
-            case "Faculty & Certificate": div = 4; break;
-            case "Event Attendence": div = 2; break;
+            case "Faculty Member": div = 9; break;
+            case "Event": div = 6; break;
+            case "Certificate": div = 3; break;
+            case "Employment": div = 3; break;
+            case "Faculty & Certificate": div = 5; break;
+            case "Event Attendence": div = 3; break;
             //case "Certificate & Event": div = 2; break;
         }
         String[][] textAreaStrings = new String[this.textAreas.size()/div][div];
+        if(textAreaStrings.length == 0) {throw new FDTException("Cannot confirm edits on an empty table!");}
         for(int i = 0; i < textAreaStrings.length; i++) {
             for(int u = 0; u < div; u++) {
                textAreaStrings[i][u] = textAreas.get(u + i*div).getText();
             }
         }
+        int emptyCounter = 0;
+        for (int i = 0; i < this.textAreas.size(); i++) {
+                if(textAreas.get(i).getText().equals("null") 
+                    || textAreas.get(i).getText().equals("") || textAreas.get(i).getText().equals(" ")) {
+                        textAreas.get(i).setBackground(new Color(255, 200, 200));
+                        emptyCounter++;
+                    } else {
+                        textAreas.get(i).setBackground(new Color(255, 255, 255));
+                    }
+            }
+        if(emptyCounter > 0) {
+            int confirm = JOptionPane.showConfirmDialog(null, 
+            "Are you sure you want to submit edits of " + emptyCounter + " pieces of empty data?", "Confirm empty edits?",
+             JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+
+            } else {
+                throw new FDTException("Then, please fill those " + emptyCounter + " empty text boxes.");
+            }
+        }
+        DataChecker.checkData(textAreaStrings, type);
         sQLpro.update(textAreaStrings, type);
     }
     public JFrame getEditingWindow() {
@@ -319,4 +347,5 @@ public class EditGUI extends TemplateGUI {
     public void setExceptionMessenge(String messenge) {
         this.exceptionMessenger.setText(messenge);
     }
+   
 }

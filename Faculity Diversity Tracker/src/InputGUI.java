@@ -35,6 +35,7 @@ public class InputGUI {
         this.dropDownSize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                setExceptionMessenge("");
                 JComboBox<String> dropDown = (JComboBox<String>)e.getSource();
                 String num = (String)dropDown.getSelectedItem();
                 listDemolish();
@@ -56,6 +57,7 @@ public class InputGUI {
         this.dropDownType.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                setExceptionMessenge("");
                 JComboBox<String> dropDown = (JComboBox<String>)e.getSource();
                 int num = dropDown.getSelectedIndex();
                 String ddString = inputTypes[num];
@@ -82,11 +84,15 @@ public class InputGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                SQLpro.add(inputType, listgetString());
+                setExceptionMessenge("");
+                String[][] doubleDimString = listgetString();
+                DataChecker.checkData(doubleDimString, inputType);
+                SQLpro.add(inputType, doubleDimString);
                 } catch (Exception ex) {
                     setExceptionMessenge(ex.getMessage());
                 }
             }
+
         });
         this.gbc = new GridBagConstraints();
         this.gbc.insets = new Insets(5, 5, 5, 5); // spacing
@@ -271,14 +277,37 @@ public class InputGUI {
             }
         }
     }
-    public String[][] listgetString() {
+    public String[][] listgetString() throws FDTException {
         String[][] table = new String[Integer.parseInt(ddSize)][ddTypeSize];
         for (int i = 0; i < this.inputTexts.length && i < Integer.parseInt(this.ddSize); i++) {
             for(int u = 0; u < this.inputTexts[i].length && u < this.ddTypeSize; u++) {
                 table[i][u] = inputTexts[i][u].getText();
             }
         }
+        int emptyCounter = 0;
+         for (int i = 0; i < this.inputTexts.length && i < Integer.parseInt(this.ddSize); i++) {
+            for(int u = 0; u < this.inputTexts[i].length && u < this.ddTypeSize; u++) {
+                if(inputTexts[i][u].getText().equals("null") 
+                    || inputTexts[i][u].getText().equals("") || inputTexts[i][u].getText().equals(" ")) {
+                        inputTexts[i][u].setBackground(new Color(255, 200, 200));
+                        emptyCounter++;
+                    } else {
+                        inputTexts[i][u].setBackground(new Color(255, 255, 255));
+                    }
+            }
+        }
+        if(emptyCounter > 0) {
+            int confirm = JOptionPane.showConfirmDialog(null, 
+            "Are you sure you want to add " + emptyCounter + " pieces of empty data?", "Confirm empty inputs?",
+             JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                return table;
+            } else {
+                throw new FDTException("Then, please fill those " + emptyCounter + " empty text boxes.");
+            }
+        }
         return table;
+    
     }
     public void setInputType(String input) {
         this.inputType = input;
@@ -291,5 +320,8 @@ public class InputGUI {
     }
     public void setExceptionMessenge(String messenge) {
         this.exceptionMessenger.setText(messenge);
+    }
+    public void setTypeonSelector(String type) {
+        this.dropDownType.setSelectedItem(type);
     }
 }

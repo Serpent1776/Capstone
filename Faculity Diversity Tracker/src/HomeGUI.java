@@ -279,7 +279,9 @@ public class HomeGUI {
         this.outputTextField.setText(s);
     }
     public void openInput() {
+        String type = (String) this.showTypes.getSelectedItem();
         this.inGUI.open();
+        this.inGUI.setTypeonSelector(type);
     }
     public void openEdit() throws Exception {
         String type = (String) this.showTypes.getSelectedItem();
@@ -306,7 +308,7 @@ public class HomeGUI {
     public void instantiateIllustratedElements(String selectedType) throws Exception {
          switch(selectedType) {
             case "Faculty Member": 
-            this.illustratedElements = new JLabel[7];
+            this.illustratedElements = new JLabel[8];
             JLabel lN = new JLabel("1. Last Name");
             this.illustratedElements[0] = lN;
             gbc.gridy++;
@@ -322,11 +324,13 @@ public class HomeGUI {
             JLabel dept_div = new JLabel("5. Dept. Division");
             this.illustratedElements[4] = dept_div;
             gbc.gridy++;
-            JLabel bIPOC = new JLabel("6. BIPOC?");
-            this.illustratedElements[5] = bIPOC;
+             JLabel employment = new JLabel("6. Employment ID");
+            this.illustratedElements[5] = employment;
+            JLabel bIPOC = new JLabel("7. BIPOC?");
+            this.illustratedElements[6] = bIPOC;
             gbc.gridy++;
-            JLabel gender = new JLabel("7. Gender");
-            this.illustratedElements[6] = gender;
+            JLabel gender = new JLabel("8. Gender");
+            this.illustratedElements[7] = gender;
             break; //7
             case "Event": 
             this.illustratedElements = new JLabel[5];
