@@ -1,24 +1,24 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-
+import java.util.ArrayList;
 
 public class HomeGUI {
     JFrame frame;
     JPanel buttonPanel;
-    JTextArea outputTextField;
+    JTextArea template;
+    ArrayList<JTextArea> outputTexts;
     JPanel outPanel;
     JLabel jText;
     InputGUI inGUI;
     EditGUI editGUI;
-    ReferenceGUI refGUI;
     DeleteGUI deleteGUI;
+    RemindGUI remindGUI;
     JButton inputButton;
     JButton editButton;
     JButton reminderButton; //for notifications
     JButton searchButton;
     JButton deleteButton;
-    JButton referenceButton;
     SQLProcessor SQLpro;
     JScrollPane scroll;
     JComboBox<String> showTypes;
@@ -31,18 +31,19 @@ public class HomeGUI {
         this.frame = new JFrame("GUITest");
         this.frame.setLayout(new GridBagLayout());
         frame.setSize(1500, 1000);
-        this.outputTextField = new JTextArea();
-        this.outputTextField.setPreferredSize(new Dimension(1000, 0));
-        this.outputTextField.setBounds(1000, 850, 1000, 850);
-        this.outputTextField.setFont(new Font("Cambria", 4, 24));
-        this.outputTextField.setBackground(null);
-        this.outputTextField.setFocusable(false);
-        this.outputTextField.setEditable(false);
-        this.scroll = new JScrollPane(this.outputTextField, 
+        this.template = new JTextArea();
+        this.template.setPreferredSize(new Dimension(1000, 0));
+        this.template.setBounds(1000, 850, 1000, 850);
+        this.template.setFont(new Font("Cambria", 4, 24));
+        this.template.setBackground(null);
+        this.template.setFocusable(false);
+        this.template.setEditable(false);
+        this.outputTexts = new ArrayList<JTextArea>();
+        this.scroll = new JScrollPane(this.template, 
            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,  JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.scroll.setPreferredSize(new Dimension(1000, 850));
         this.scroll.getVerticalScrollBar().setPreferredSize(new Dimension(20, 0));
-        //this.outputTextField.setCaretPosition(this.outputTextField.getDocument().getLength());
+        //this.template.setCaretPosition(this.template.getDocument().getLength());
         this.scroll.setAutoscrolls(true);
         this.inputButton = new JButton("Add");
         this.inputButton.setBackground(new Color(200, 255, 200));
@@ -64,12 +65,8 @@ public class HomeGUI {
         this.deleteButton.setBackground(new Color(255, 120, 120));
         this.deleteButton.setPreferredSize(new Dimension(120,50));
         this.deleteButton.setFont(new Font("Cambria", 4, 24));
-        this.referenceButton = new JButton("Reference");
-        this.referenceButton.setBackground(new Color(155, 155, 155));
-        this.referenceButton.setPreferredSize(new Dimension(150,50));
-        this.referenceButton.setFont(new Font("Cambria", 4, 24));
         //this..setText("");
-        //this.outputTextField.setText("");
+        //this.template.setText("");
         this.buttonPanel = new JPanel();
         this.outPanel = new JPanel();
         this.outPanel.add(this.scroll);
@@ -78,7 +75,6 @@ public class HomeGUI {
         this.buttonPanel.add(this.reminderButton);
         this.buttonPanel.add(this.searchButton);
         this.buttonPanel.add(this.deleteButton);
-        this.buttonPanel.add(this.referenceButton);
         this.gbc = new GridBagConstraints();
         this.gbc.insets = new Insets(5, 5, 5, 5);
         this.gbc.gridy = 0;
@@ -86,6 +82,7 @@ public class HomeGUI {
         this.inGUI = new InputGUI();
         this.editGUI = new EditGUI();
         this.deleteGUI = new DeleteGUI();
+        this.remindGUI = new RemindGUI();
         this.SQLpro = new SQLProcessor();
         this.inputButton.addActionListener(new ActionListener() {
             @Override
@@ -103,17 +100,21 @@ public class HomeGUI {
                 }
             }
         });
-        this.referenceButton.addActionListener( new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openReference();
-            }
-        });
         this.deleteButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 try {
                 openDelete();
+                } catch (Exception e) {
+                    System.err.println(e);
+                }
+            }
+        });
+        this.reminderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                try {
+                    openRemind();
                 } catch (Exception e) {
                     System.err.println(e);
                 }
@@ -243,13 +244,12 @@ public class HomeGUI {
         this.inputTypes[5] = "Event Attendence"; //2
         this.inputTypes[6] = "Certificate & Event"; //2
         this.showTypes = new JComboBox<String>(inputTypes);
-        instantiateIllustratedElements("Faculty Member");
-        this.refGUI = new ReferenceGUI(illustratedElements);
         this.showTypes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent selection) {
                 try {
                 JComboBox<String> typeBox = (JComboBox<String>)selection.getSource();
+                removeAll();
                 showDataType((String)typeBox.getSelectedItem());
                 } catch(Exception e) {
                     System.out.print(e.getMessage());
@@ -264,7 +264,7 @@ public class HomeGUI {
         this.frame.getContentPane().add(this.outPanel, gbc);
         this.gbc.gridx = 2;
         this.frame.getContentPane().add(this.showTypes, gbc);
-        this.illustratedElements = new JLabel[7];
+        this.illustratedElements = new JLabel[9];
     }
     public void open() {
         this.frame.setVisible(true);
@@ -276,7 +276,7 @@ public class HomeGUI {
         return !(this.frame.isVisible());
     }
     public void setOut(String s) {
-        this.outputTextField.setText(s);
+        this.template.setText(s);
     }
     public void openInput() {
         String type = (String) this.showTypes.getSelectedItem();
@@ -293,117 +293,220 @@ public class HomeGUI {
         this.deleteGUI.open();
         this.deleteGUI.setDeleteType(type);
     }
-    public void showDataType(String selectedType) throws Exception {
-        this.outputTextField.setText(SQLpro.showSpecific(selectedType));
-        this.outputTextField.setPreferredSize(new Dimension(1000, SQLpro.getIndex()*29));
-        this.scroll.getVerticalScrollBar().setPreferredSize(new Dimension(20, SQLpro.getIndex()*29));
-        this.outputTextField.setCaretPosition(0);
-        if(!firstTime) {
-            instantiateIllustratedElements(selectedType);
-            this.refGUI.reset(this.illustratedElements);
-        } else {
-            firstTime = false;
-        }
+    public void openRemind() throws Exception {
+        this.remindGUI.open();
     }
-    public void instantiateIllustratedElements(String selectedType) throws Exception {
-         switch(selectedType) {
+    public void showDataType(String selectedType) throws Exception {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        String toBeSplit = SQLpro.showSpecific(selectedType, "~");
+        String[] firstSplit = toBeSplit.split("\n");
+        this.gbc.gridx = 0;
+        this.gbc.gridy = 0;
+        int div = 0;
+        switch(selectedType) {
             case "Faculty Member": 
-            this.illustratedElements = new JLabel[8];
-            JLabel lN = new JLabel("1. Last Name");
-            this.illustratedElements[0] = lN;
-            gbc.gridy++;
-            JLabel fN = new JLabel("2. First Name");
-            this.illustratedElements[1] = fN;
-            gbc.gridy++;
-            JLabel email = new JLabel("3. Email");
-            this.illustratedElements[2] = email;
-            gbc.gridy++;
-            JLabel role = new JLabel("4. Role");
-            this.illustratedElements[3] = role;
-            gbc.gridy++;
-            JLabel dept_div = new JLabel("5. Dept. Division");
-            this.illustratedElements[4] = dept_div;
-            gbc.gridy++;
-             JLabel employment = new JLabel("6. Employment ID");
-            this.illustratedElements[5] = employment;
-            JLabel bIPOC = new JLabel("7. BIPOC?");
-            this.illustratedElements[6] = bIPOC;
-            gbc.gridy++;
-            JLabel gender = new JLabel("8. Gender");
-            this.illustratedElements[7] = gender;
+            JLabel id = new JLabel("Faculty ID");
+            id.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(id, gbc);
+            illustratedElements[0] = id;
+            gbc.gridx++;
+            JLabel lN = new JLabel("Last Name");
+            lN.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(lN, gbc);
+            illustratedElements[1] = lN;
+            gbc.gridx++;
+            JLabel fN = new JLabel("First Name");
+            fN.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(fN, gbc);
+            illustratedElements[2] = fN;
+            gbc.gridx++;
+            JLabel email = new JLabel("Email");
+            email.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(email, gbc);
+            illustratedElements[3] = email;
+            gbc.gridx++;
+            JLabel role = new JLabel("Role");
+            role.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(role, gbc);
+            illustratedElements[4] = role;
+            gbc.gridx++;
+            JLabel dept_div = new JLabel("Dept. Division");
+            dept_div.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(dept_div, gbc);
+            illustratedElements[5] = dept_div;
+            gbc.gridx++;
+            JLabel epID = new JLabel("Employment ID");
+            epID.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(epID, gbc);
+            illustratedElements[6] = epID;
+            gbc.gridx++;
+            JLabel bIPOC = new JLabel("BIPOC?");
+            bIPOC.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(bIPOC, gbc);
+            illustratedElements[7] = bIPOC;
+            gbc.gridx++;
+            JLabel gender = new JLabel("Gender");
+            gender.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(gender, gbc);
+            illustratedElements[8] = gender;
             break; //7
             case "Event": 
-            this.illustratedElements = new JLabel[5];
-            JLabel eN = new JLabel("1. Name of Event");
-            this.illustratedElements[0] = eN;
-            gbc.gridy++;
-            JLabel eDate = new JLabel("2. Event Date");
-            this.illustratedElements[1] = eDate;
-            gbc.gridy++;
-            JLabel eventType = new JLabel("3. Event Type");
-            this.illustratedElements[2] = eventType;
-            gbc.gridy++;
-            JLabel requirement = new JLabel("4. Requirement");
-            this.illustratedElements[3] = requirement;
-            gbc.gridy++;
-            JLabel notes = new JLabel("5. notes");
-            this.illustratedElements[4] = notes;
+            JLabel eID = new JLabel("Event ID");
+            eID.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(eID, gbc);
+            illustratedElements[0] = eID;
+            gbc.gridx++;
+            JLabel eN = new JLabel("Name of Event");
+            eN.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(eN, gbc);
+            illustratedElements[1] = eN;
+            gbc.gridx++;
+            JLabel eDate = new JLabel("Event Date");
+            eDate.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(eDate, gbc);
+            illustratedElements[2] = eDate;
+            gbc.gridx++;
+            JLabel eventType = new JLabel("Event Type");
+            eventType.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(eventType, gbc);
+            illustratedElements[3] = eventType;
+            gbc.gridx++;
+            JLabel requirement = new JLabel("Requirement");
+            requirement.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(requirement, gbc);
+            illustratedElements[4] = requirement;
+            gbc.gridx++;
+            JLabel notes = new JLabel("notes");
+            notes.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(notes, gbc);
+            illustratedElements[5] = notes;
             break; //5
             case "Certificate":
-            this.illustratedElements = new JLabel[2];
-            JLabel noc = new JLabel("1. Name of Certificate");
-            this.illustratedElements[0] = noc;
-            gbc.gridy++;
-            JLabel cT = new JLabel("2. Certificate Type");
-            this.illustratedElements[1] = cT;
+            JLabel certID = new JLabel("Certificate ID");
+            certID.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(certID, gbc);
+            illustratedElements[0] = certID;
+            gbc.gridx++;
+            JLabel noc = new JLabel("Name of Certificate");
+            noc.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(noc, gbc);
+            illustratedElements[1] = noc;
+            gbc.gridx++;
+            JLabel cT = new JLabel("Certificate Type");
+            cT.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(cT, gbc);  
+            illustratedElements[2] = cT;
             break; //2
             case "Employment":
-            this.illustratedElements = new JLabel[2];
-            JLabel appID = new JLabel("1. Application ID");
-            this.illustratedElements[0] = appID;
-            gbc.gridy++;
-            JLabel desc = new JLabel("2. Description"); 
-            this.illustratedElements[1] = desc;
+            JLabel EmID = new JLabel("Employmee ID");
+            EmID.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(EmID, gbc);
+            illustratedElements[0] = EmID;
+            gbc.gridx++;
+            JLabel appID = new JLabel("Application ID");
+            appID.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(appID, gbc); 
+            illustratedElements[1] = appID;
+            gbc.gridx++;
+            JLabel desc = new JLabel("Description");
+            desc.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(desc, gbc); 
+            illustratedElements[2] = desc;
             break; //2
             case "Faculty & Certificate":
-            this.illustratedElements = new JLabel[5];
-            JLabel lNos = new JLabel("1. Staff ID");
-            this.illustratedElements[0] = lNos;
-            gbc.gridy++;
-            JLabel bDate = new JLabel("2. Bronze Date");
-            this.illustratedElements[1] = bDate;
-            gbc.gridy++;
-            JLabel sDate = new JLabel("3. Silver Date");
-            this.illustratedElements[2] = sDate;
-            gbc.gridy++;
-            JLabel gDate = new JLabel("4. Gold date");
-            this.illustratedElements[3] = gDate;
-            gbc.gridy++;
-            JLabel cName = new JLabel("5. Certificate ID");
-            this.illustratedElements[4] = cName;
+            JLabel lNos = new JLabel("Staff ID");
+            lNos.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(lNos, gbc);
+            illustratedElements[0] = lNos;
+            gbc.gridx++;
+            JLabel bDate = new JLabel("Bronze Date");
+            bDate.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(bDate, gbc);
+            illustratedElements[1] = bDate;
+            gbc.gridx++;
+            JLabel sDate = new JLabel("Silver Date");
+            sDate.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(sDate, gbc);
+            illustratedElements[2] = sDate;
+            gbc.gridx++;
+            JLabel gDate = new JLabel("Gold date");
+            gDate.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(gDate, gbc);
+            illustratedElements[3] = gDate;
+            gbc.gridx++;
+            JLabel cName = new JLabel("Certificate ID");
+            cName.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(cName, gbc);  
+            illustratedElements[4] = cName;
             break; //5
             case "Event Attendence":
-            this.illustratedElements = new JLabel[3];
-            JLabel lNs = new JLabel("1. Attendence ID");
-            this.illustratedElements[0] = lNs;
-            gbc.gridy++;
-            JLabel nE = new JLabel("2. Staff ID");
-            this.illustratedElements[1] = nE;
-             JLabel eI = new JLabel("3. Event ID");
-            this.illustratedElements[2] = eI;
+            JLabel ad = new JLabel("Attend ID");
+            ad.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(ad, gbc);
+            illustratedElements[0] = ad;
+            gbc.gridx++;
+            JLabel lNs = new JLabel("Staff ID");
+            lNs.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(lNs, gbc);
+            illustratedElements[1] = lNs;
+            gbc.gridx++;
+            JLabel nE = new JLabel("Event ID");
+            nE.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(nE, gbc);
+            illustratedElements[2] = nE;
             break; //2
             case "Certificate & Event":
-            this.illustratedElements = new JLabel[2];
-            JLabel cne = new JLabel("1. Certificate ID");
-            this.illustratedElements[0] = cne;
-            gbc.gridy++;
-            JLabel ne = new JLabel("2. Event ID");
-            this.illustratedElements[1] = ne;
+            JLabel cne = new JLabel("Certificate ID");
+            cne.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(cne, gbc);
+            illustratedElements[0] = cne;
+            gbc.gridx++;
+            JLabel ne = new JLabel("Event ID");
+            ne.setFont(new Font("Cambria Bold", 8, 24));
+            panel.add(ne, gbc);
+            illustratedElements[1] = ne;
             break; //2   
         }
-    }
-    public void openReference() {
-        this.refGUI.open();
+        switch(selectedType) {
+            case "Faculty Member": div = 9; break;
+            case "Event": div = 6; break;
+            case "Certificate": div = 3; break;
+            case "Employment": div = 3; break;
+            case "Faculty & Certificate": div = 5; break;
+            case "Event Attendence": div = 3; break;
+            case "Certificate & Event": div = 2; break;
+        }
+        String[][] secondSplit = new String[firstSplit.length][div];
+         for(int i = 0; i < firstSplit.length; i++) {
+            secondSplit[i] = firstSplit[i].split("~");
+        }
+        gbc.gridx = 0;
+        gbc.gridy++;
+         for (int i = 0; i < secondSplit.length; i++) {
+            for (int u = 0; u < secondSplit[i].length; u++) {
+            JTextArea iJTextArea = new JTextArea(secondSplit[i][u]);
+            iJTextArea.setPreferredSize(this.template.getPreferredSize());
+            iJTextArea.setFont(this.template.getFont());
+            iJTextArea.setEditable(false);
+            iJTextArea.setOpaque(false);
+            iJTextArea.getCaret().setVisible(false);
+            panel.add(iJTextArea, gbc);
+            this.outputTexts.add(iJTextArea);
+            gbc.gridx++;
+            }
+            gbc.gridx = 0;
+            gbc.gridy++; 
+        }
+        int highest = 0;
+        for(String str: firstSplit) {
+            if(str.length() > highest) {
+                highest = str.length();
+            }
+        }
+        panel.setPreferredSize(new Dimension(highest*19, SQLpro.getIndex()*29));
+        this.scroll.setViewportView(panel);
+        this.scroll.getVerticalScrollBar().setPreferredSize(new Dimension(20, SQLpro.getIndex()*29));
     }
     public void redirectToShowInputedData() throws Exception {
         showDataType(this.inGUI.getInputType());
@@ -416,5 +519,19 @@ public class HomeGUI {
     public void redirectToShowRemainingData() throws Exception {
         showDataType(this.deleteGUI.getDataDeletedType());
         this.showTypes.setSelectedItem(this.deleteGUI.getDataDeletedType());
+    }
+    public void removeAll() throws Exception {
+        if(!this.outputTexts.isEmpty()) {
+       for (JTextArea textArea : this.outputTexts) {
+            this.frame.getContentPane().remove(textArea);
+        }
+        this.outputTexts.removeAll(this.outputTexts);
+        }   
+        for (int i = 0; i < this.illustratedElements.length; i++) {
+            if(this.illustratedElements[i] != null) {
+            this.frame.getContentPane().remove(this.illustratedElements[i]);
+            }
+        }
+        this.illustratedElements = new JLabel[illustratedElements.length];
     }
 }
