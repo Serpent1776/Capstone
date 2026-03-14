@@ -124,6 +124,7 @@ public class HomeGUI {
             public void windowClosing(WindowEvent windowClosed) {
                 try {
                 redirectToShowInputedData();
+                updateRemind();
                 } catch(Exception e) {
                   
                 }
@@ -162,6 +163,7 @@ public class HomeGUI {
             public void windowClosing(WindowEvent windowClosed) {
                 try {
                 redirectToShowEditedData();
+                updateRemind();
                 } catch(Exception e) {
                   
                 }
@@ -200,6 +202,7 @@ public class HomeGUI {
             public void windowClosing(WindowEvent windowClosed) {
                 try {
                 redirectToShowRemainingData();
+                updateRemind();
                 } catch(Exception e) {
                   
                 }
@@ -265,6 +268,7 @@ public class HomeGUI {
         this.gbc.gridx = 2;
         this.frame.getContentPane().add(this.showTypes, gbc);
         this.illustratedElements = new JLabel[9];
+        updateRemind();
     }
     public void open() {
         this.frame.setVisible(true);
@@ -504,7 +508,7 @@ public class HomeGUI {
                 highest = str.length();
             }
         }
-        panel.setPreferredSize(new Dimension(highest*19, SQLpro.getIndex()*29));
+        panel.setPreferredSize(new Dimension(highest*21, SQLpro.getIndex()*41));
         this.scroll.setViewportView(panel);
         this.scroll.getVerticalScrollBar().setPreferredSize(new Dimension(20, SQLpro.getIndex()*29));
     }
@@ -533,5 +537,9 @@ public class HomeGUI {
             }
         }
         this.illustratedElements = new JLabel[illustratedElements.length];
+    }
+    public void updateRemind() throws Exception {
+        remindGUI.notificationCheck();
+        remindGUI.open();
     }
 }

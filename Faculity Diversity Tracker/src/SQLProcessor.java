@@ -424,7 +424,11 @@ public class SQLProcessor {
                     String stmt = "";
                     stmt += "update facultyevent ";
                     stmt += "set eventName = \"" + string2D[i][1] + "\", ";
+                    if(!(string2D[i][2].equals("null") || string2D[i][2].equals(""))) {
                     stmt += "eventDate = \"" + string2D[i][2] + "\", ";
+                    } else {
+                        stmt += "eventDate = NULL, ";
+                    }
                     stmt += "eventType = \"" + string2D[i][3] + "\", ";
                     stmt += "requirement = \"" + string2D[i][4] + "\", ";
                      stmt += "notes = \"" + string2D[i][5] + "\"";
@@ -548,7 +552,7 @@ public class SQLProcessor {
             statement = conn.prepareStatement(stmt);
             statement.execute();  
             case "Certificate & Event":
-            stmt = "delete from facultycert where certID = " + frontIndex + " and eventID = " + backIndex  + ";";
+            stmt = "delete from eventcert where certID = " + frontIndex + " and eventID = " + backIndex  + ";";
             System.out.println(stmt);
             statement = conn.prepareStatement(stmt);
             statement.execute();    
@@ -592,5 +596,70 @@ public class SQLProcessor {
         }
         statement = conn.prepareStatement("set foreign_key_checks = 1");
         statement.execute();
+    }
+    public String showJoinedEventCertEvent() throws Exception {
+        String results = "";
+        statement = conn.prepareStatement("select * from capstone.eventcert" +
+         " join capstone.facultyevent on capstone.facultyevent.id = capstone.eventcert.eventID;");
+         rSet = statement.executeQuery();
+         while(this.rSet.next() == true) {
+            results += this.rSet.getString(1) + " ";
+            results += this.rSet.getString(2) + " ";
+            results += this.rSet.getString(3) + " ";
+            results += this.rSet.getString(4) + " ";
+            results += this.rSet.getString(5) + " ";
+            results += this.rSet.getString(6) + " ";
+            results += this.rSet.getString(7) + " ";
+            if(!this.rSet.getString(8).equals("")) {
+                results += this.rSet.getString(8);
+                } else {
+                    results += " ";
+                }
+            results += "\n";
+            this.index++;
+         }
+         return results;
+    }
+    public String showNonEventCertEvents() throws Exception {
+        String results = "";
+        statement = conn.prepareStatement("select eventName from eventcert" + 
+        " right join facultyevent on facultyevent.id = eventcert.eventID" + 
+        " where eventcert.eventID is null;");
+        rSet = statement.executeQuery();
+        while(this.rSet.next() == true) {
+            if(!this.rSet.getString(1).equals("") && !this.rSet.getString(1).equals(" ") && !this.rSet.getString(1).equals("null")) {
+            results += this.rSet.getString(1) + "\n";
+            }
+        }
+        return results;
+    }
+    public String showFaculityMemberAttendedEventsforCert(int facultyID, int certID) throws Exception {
+        String results = "";
+        statement = conn.prepareStatement("select * from attendid join eventcert " + 
+                "on attendid.eventID = eventcert.eventID " +
+                 "where attendid.facultyID = " + facultyID + " and eventcert.certID = " + certID + ";");
+        rSet = statement.executeQuery();
+        while(this.rSet.next() == true) {
+            results += this.rSet.getString(1) + " ";
+            results += this.rSet.getString(2) + " ";
+            results += this.rSet.getString(3) + " ";
+            results += this.rSet.getString(4) + " ";
+            results += this.rSet.getString(5) + "\n";
+        }
+        return results;
+    }
+    public String showFaculityCert(int facultyID, int certID, String splitter) throws Exception {
+        String result = "";
+        statement = conn.prepareStatement("select * from facultycert where personID = " + facultyID + 
+        " and certID =" + certID);
+        rSet = statement.executeQuery();
+        while(this.rSet.next() == true) {
+            result += this.rSet.getString(1) + splitter;
+            result += this.rSet.getString(2) + splitter;
+            result += this.rSet.getString(3) + splitter;
+            result += this.rSet.getString(4) + splitter;
+            result += this.rSet.getString(5) + "\n";
+        }
+        return result;
     }
 }
