@@ -64,12 +64,13 @@ public class RemindGUI extends TemplateGUI {
         }
         }
     }
-    public void removeIrrelevantEventCerts() {
+    public void removeIrrelevantEventCerts() throws Exception {
         if(nonEventCertEvents == null) {
             return;
         }
         for (String eventName : nonEventCertEvents) {
-            for (String notification: notifications) {
+            for (int i = 0; i < notifications.size(); i++) {
+                String notification = notifications.get(i);
                 if(notification.equals("Please add an eventCert (event and certifcate connection) for " + eventName + ".")) {
                     notifications.remove(notification);
                     updateNotifications();
@@ -80,12 +81,17 @@ public class RemindGUI extends TemplateGUI {
     }
     public void certificateRecommendationCheck() throws Exception {
         String[] events = sQLPro.showSpecific("Event", "~").split("\n");
+        int equalscounter = 0;
         for(int i = 0; i < events.length; i++) {
             for (String cert : certs) {      
-            if(!events[i].split("~")[3].equals(cert.split("~")[2])) {
-                addNotification("Please add a certificate for " + events[i].split("~")[3] + ".");
+            if(events[i].split("~")[3].equals(cert.split("~")[2])) {
+                equalscounter++;
             }
         }
+            if(equalscounter == 0) {
+                addNotification("Please add a certificate for " + events[i].split("~")[3] + ".");
+            }
+            equalscounter = 0;
     }
     }
     public void updateCertList() throws Exception {
@@ -157,7 +163,7 @@ public class RemindGUI extends TemplateGUI {
                     thing = thing[0].split("~");
                 } else {continue;}
                 String[] faculityrow = facultyMembers[f].split("~");
-                if(!thing[3].equals("")) {
+                if(!(thing[3].equals("") || thing[3].equals("null"))) {
                     try {
                         notifications.remove("Please recommend " + faculityrow[2] + " " + faculityrow[1]
                          + " for a Gold " + this.certs[c].split("~")[2] + " certificate.");
@@ -168,7 +174,7 @@ public class RemindGUI extends TemplateGUI {
                     } catch(Exception e) {
 
                     }
-                } else if (!thing[2].equals("")) {
+                } else if (!(thing[2].equals("") || thing[2].equals("null"))) {
                     try {
                         notifications.remove("Please recommend " + faculityrow[2] + " " + faculityrow[1]
                          + " for a Silver " + this.certs[c].split("~")[2] + " certificate.");
@@ -177,7 +183,7 @@ public class RemindGUI extends TemplateGUI {
                     } catch(Exception e) {
 
                     }
-                } else if (!thing[1].equals("")) {
+                } else if (!(thing[1].equals("") || thing[1].equals("null"))) {
                     try {
                         notifications.remove("Please recommend " + faculityrow[2] + " " + faculityrow[1]
                          + " for a Bronze " + this.certs[c].split("~")[2] + " certificate.");

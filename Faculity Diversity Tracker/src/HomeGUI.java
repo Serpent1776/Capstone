@@ -126,7 +126,7 @@ public class HomeGUI {
                 redirectToShowInputedData();
                 updateRemind();
                 } catch(Exception e) {
-                  
+                   System.err.print(e);
                 }
             }
             @Override
@@ -165,7 +165,7 @@ public class HomeGUI {
                 redirectToShowEditedData();
                 updateRemind();
                 } catch(Exception e) {
-                  
+                  System.err.print(e);
                 }
             }
             @Override
