@@ -129,7 +129,7 @@ public class RemindGUI extends TemplateGUI {
                     thing = thing[0].split("~");
                     } else {
                         addNotification("Please recommend " + faculityrow[2] + " " + faculityrow[1]
-                         + " for a bronze" + this.certs[c].split("~")[2] + "certificate.");
+                         + " for a Bronze " + this.certs[c].split("~")[2] + " certificate.");
                          continue;
                     }
                     if(facultyEvents.length >= 18) {
@@ -191,6 +191,26 @@ public class RemindGUI extends TemplateGUI {
 
                     }
                 }
+                String[] facultyEvents = sQLPro.showFaculityMemberAttendedEventsforCert(f+1, c+1).split("\n");
+                 if(facultyEvents.length >= 18) {
+                   
+                 } else if(facultyEvents.length >= 12) {
+                      notifications.remove("Please recommend " + faculityrow[2] + " " + faculityrow[1]
+                         + " for a Gold " + this.certs[c].split("~")[2] + " certificate.");
+                 } else if(facultyEvents.length >= 6) {
+                    notifications.remove("Please recommend " + faculityrow[2] + " " + faculityrow[1]
+                         + " for a Gold " + this.certs[c].split("~")[2] + " certificate.");
+                    notifications.remove("Please recommend " + faculityrow[2] + " " + faculityrow[1]
+                         + " for a Silver " + this.certs[c].split("~")[2] + " certificate.");
+                 } else {
+                    notifications.remove("Please recommend " + faculityrow[2] + " " + faculityrow[1]
+                         + " for a Gold " + this.certs[c].split("~")[2] + " certificate.");
+                    notifications.remove("Please recommend " + faculityrow[2] + " " + faculityrow[1]
+                         + " for a Silver " + this.certs[c].split("~")[2] + " certificate.");
+                    notifications.remove("Please recommend " + faculityrow[2] + " " + faculityrow[1]
+                         + " for a Bronze " + this.certs[c].split("~")[2] + " certificate.");
+                 }
+
             }
         }
         updateNotifications();
