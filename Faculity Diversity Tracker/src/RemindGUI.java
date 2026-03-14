@@ -59,7 +59,7 @@ public class RemindGUI extends TemplateGUI {
         this.nonEventCertEvents = sQLPro.showNonEventCertEvents().split("\n");
         for(String event: nonEventCertEvents) {
             if(!notificationText.getText().contains(event)) {
-                addNotification("Please add an eventCert (event and certifcate connection) for " + event);
+                addNotification("Please add an eventCert (event and certifcate connection) for " + event + ".");
             }
         }
         }
@@ -70,7 +70,7 @@ public class RemindGUI extends TemplateGUI {
         }
         for (String eventName : nonEventCertEvents) {
             for (String notification: notifications) {
-                if(notification.equals("Please add an eventCert (event and certifcate connection) for " + eventName)) {
+                if(notification.equals("Please add an eventCert (event and certifcate connection) for " + eventName + ".")) {
                     notifications.remove(notification);
                     updateNotifications();
                 }
@@ -83,7 +83,7 @@ public class RemindGUI extends TemplateGUI {
         for(int i = 0; i < events.length; i++) {
             for (String cert : certs) {      
             if(!events[i].split("~")[3].equals(cert.split("~")[2])) {
-                addNotification("Please add a certificate for " + events[i].split("~")[3]);
+                addNotification("Please add a certificate for " + events[i].split("~")[3] + ".");
             }
         }
     }
@@ -94,7 +94,7 @@ public class RemindGUI extends TemplateGUI {
         for(String cert: this.certs) {
             for (int i = 0; i < notifications.size(); i++) {
                 String notification = notifications.get(i);
-                if(notification.equals("Please add a certificate for " + cert.split("~")[2])) {
+                if(notification.equals("Please add a certificate for " + cert.split("~")[2] + ".")) {
                     marks.add(i);
                 }
         }
@@ -201,11 +201,13 @@ public class RemindGUI extends TemplateGUI {
             certificateRecommendationCheck();
             updateEventList();
             updateFaculityRecommendations();
-            System.out.print(notificationText.getText());
+            //System.out.print(notificationText.getText());
         }
     }
     public void addNotification(String notification) {
+        if(!this.notifications.contains(notification)) {
         this.notifications.add(notification);
+        }
         updateNotifications();
     }
     public void updateNotifications() {
