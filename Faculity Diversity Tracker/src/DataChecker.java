@@ -1,4 +1,4 @@
-import java.text.NumberFormat;
+
 
 public class DataChecker {
     public static void checkData(String[][] strTable, String type) throws FDTException {
@@ -101,6 +101,7 @@ public class DataChecker {
         }
     }
     public static void checkInt(String parseable) throws NumberFormatException {
+        @SuppressWarnings("unused")
         int test = Integer.parseInt(parseable);
     }
     public static void checkDate(String date) throws FDTException {

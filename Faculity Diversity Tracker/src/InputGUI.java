@@ -36,6 +36,7 @@ public class InputGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setExceptionMessenge("");
+                @SuppressWarnings("unchecked")
                 JComboBox<String> dropDown = (JComboBox<String>)e.getSource();
                 String num = (String)dropDown.getSelectedItem();
                 listDemolish();
@@ -58,6 +59,7 @@ public class InputGUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setExceptionMessenge("");
+                @SuppressWarnings("unchecked")
                 JComboBox<String> dropDown = (JComboBox<String>)e.getSource();
                 int num = dropDown.getSelectedIndex();
                 String ddString = inputTypes[num];

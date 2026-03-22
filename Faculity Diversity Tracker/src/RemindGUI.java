@@ -33,6 +33,7 @@ public class RemindGUI extends TemplateGUI {
         this.certs = sQLPro.showSpecific("Certificate", "~").split("\n");
         notifscroll = new JScrollPane(notificationText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         notifscroll.setPreferredSize(new Dimension(20, 500));
+        notifscroll.setAutoscrolls(true);
         super.window.add(notifscroll, BorderLayout.NORTH);
         this.report = new File("Faculity Diversity Tracker\\src\\remind.txt");
         this.export = new JButton("export");

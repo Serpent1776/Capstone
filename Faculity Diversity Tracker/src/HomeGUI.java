@@ -14,6 +14,7 @@ public class HomeGUI {
     EditGUI editGUI;
     DeleteGUI deleteGUI;
     RemindGUI remindGUI;
+    SearchGUI searchGUI;
     JButton inputButton;
     JButton editButton;
     JButton reminderButton; //for notifications
@@ -83,6 +84,7 @@ public class HomeGUI {
         this.editGUI = new EditGUI();
         this.deleteGUI = new DeleteGUI();
         this.remindGUI = new RemindGUI();
+        this.searchGUI = new SearchGUI();
         this.SQLpro = new SQLProcessor();
         this.inputButton.addActionListener(new ActionListener() {
             @Override
@@ -102,7 +104,7 @@ public class HomeGUI {
         });
         this.deleteButton.addActionListener( new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent pressed) {
                 try {
                 openDelete();
                 } catch (Exception e) {
@@ -112,9 +114,18 @@ public class HomeGUI {
         });
         this.reminderButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent pressed) {
                 try {
                     openRemind();
+                } catch (Exception e) {
+                    System.err.println(e);
+                }
+            }
+        });
+        this.searchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent pressed) {
+               try {
+                    openSearch();
                 } catch (Exception e) {
                     System.err.println(e);
                 }
@@ -237,7 +248,45 @@ public class HomeGUI {
                 //throw new UnsupportedOperationException("Unimplemented method 'windowOpened'");
             }
         });
-        
+        this.searchGUI.getSearchWindow().addWindowListener(new WindowListener() {
+            public void windowClosing(WindowEvent windowClosed) {
+                try {
+                redirectToShowSearchedData();
+                updateRemind();
+                } catch(Exception e) {
+                   System.err.print(e);
+                }
+            }
+            @Override
+            public void windowActivated(WindowEvent e) {
+                //throw new UnsupportedOperationException("Unimplemented method 'windowActivated'");
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+                //throw new UnsupportedOperationException("Unimplemented method 'windowClosed'");
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+                //throw new UnsupportedOperationException("Unimplemented method 'windowDeactivated'");
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+                //throw new UnsupportedOperationException("Unimplemented method 'windowDeiconified'");
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+                //throw new UnsupportedOperationException("Unimplemented method 'windowIconified'");
+            }
+
+            @Override
+            public void windowOpened(WindowEvent e) {
+                //throw new UnsupportedOperationException("Unimplemented method 'windowOpened'");
+            }
+        });
         this.inputTypes = new String[7]; //widths below:
         this.inputTypes[0] = "Faculty Member"; //7
         this.inputTypes[1] = "Event"; //5
@@ -251,6 +300,7 @@ public class HomeGUI {
             @Override
             public void actionPerformed(ActionEvent selection) {
                 try {
+                @SuppressWarnings("unchecked")
                 JComboBox<String> typeBox = (JComboBox<String>)selection.getSource();
                 removeAll();
                 showDataType((String)typeBox.getSelectedItem());
@@ -299,6 +349,10 @@ public class HomeGUI {
     }
     public void openRemind() throws Exception {
         this.remindGUI.open();
+    }
+    public void openSearch() throws Exception {
+        this.searchGUI.open();
+        
     }
     public void showDataType(String selectedType) throws Exception {
         JPanel panel = new JPanel();
@@ -513,16 +567,20 @@ public class HomeGUI {
         this.scroll.getVerticalScrollBar().setPreferredSize(new Dimension(20, SQLpro.getIndex()*29));
     }
     public void redirectToShowInputedData() throws Exception {
-        showDataType(this.inGUI.getInputType());
-        this.showTypes.setSelectedItem(this.inGUI.getInputType());
+        showDataType(inGUI.getInputType());
+        showTypes.setSelectedItem(inGUI.getInputType());
     }
     public void redirectToShowEditedData() throws Exception {
-        showDataType(this.editGUI.getEditedDataType());
-        this.showTypes.setSelectedItem(this.editGUI.getEditedDataType());
+        showDataType(editGUI.getEditedDataType());
+        showTypes.setSelectedItem(editGUI.getEditedDataType());
     }
     public void redirectToShowRemainingData() throws Exception {
-        showDataType(this.deleteGUI.getDataDeletedType());
-        this.showTypes.setSelectedItem(this.deleteGUI.getDataDeletedType());
+        showDataType(deleteGUI.getDataDeletedType());
+        showTypes.setSelectedItem(deleteGUI.getDataDeletedType());
+    }
+    public void redirectToShowSearchedData() throws Exception {
+        showDataType(searchGUI.getToBeSearchedType());
+        showTypes.setSelectedItem(searchGUI.getToBeSearchedType());
     }
     public void removeAll() throws Exception {
         if(!this.outputTexts.isEmpty()) {

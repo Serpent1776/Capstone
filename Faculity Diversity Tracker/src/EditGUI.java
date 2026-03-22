@@ -67,6 +67,7 @@ public class EditGUI extends TemplateGUI {
         this.scrollGlass = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.scrollGlass.setPreferredSize(new Dimension(1000, 850));
         this.scrollGlass.getVerticalScrollBar().setPreferredSize(new Dimension(20, 850));
+        this.scrollGlass.setAutoscrolls(true);
         this.gbc.gridx = 0;
         this.gbc.gridy = 1;
         super.window.getContentPane().add(scrollGlass, gbc);
