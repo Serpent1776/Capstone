@@ -34,7 +34,7 @@ public class HomeGUI {
         frame.setSize(1500, 1000);
         this.template = new JTextArea();
         this.template.setPreferredSize(new Dimension(1000, 0));
-        this.template.setBounds(1000, 850, 1000, 850);
+        //this.template.setBounds(1000, 850, 1000, 850);
         this.template.setFont(new Font("Cambria", 4, 24));
         this.template.setBackground(null);
         this.template.setFocusable(false);
