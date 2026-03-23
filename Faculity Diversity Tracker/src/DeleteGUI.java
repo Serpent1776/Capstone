@@ -19,7 +19,7 @@ public class DeleteGUI extends TemplateGUI {
         super("Delete");
         super.window.setLayout(new GridBagLayout());
         this.templateBox = new JCheckBox();
-        this.templateBox.setPreferredSize(new Dimension(1000000, 29));
+        this.templateBox.setPreferredSize(new Dimension(1050, 29));
         this.templateBox.setFont(new Font("Cambria", 4, 24));
         this.deletionTypes = new String[7];
         this.deletionTypes[0] = "Faculty Member"; //7
@@ -43,7 +43,7 @@ public class DeleteGUI extends TemplateGUI {
         });
         this.deletionSpot = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.deletionSpot.setPreferredSize(new Dimension(1000, 850));
-        this.deletionSpot.getVerticalScrollBar().setPreferredSize(new Dimension(20, 850));
+        //this.deletionSpot.getVerticalScrollBar().setPreferredSize(new Dimension(20, 850));
         this.deletionSpot.setAutoscrolls(true);
         this.gbc = new GridBagConstraints();
         this.gbc.insets = new Insets(5, 5, 5, 5);
