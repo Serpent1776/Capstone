@@ -1,6 +1,11 @@
 //import java.sql.*;
 public class FDTDriver {
     public static void main(String[] args) throws Exception {
+        /*
+        To implement after milestone 5: 
+        Drop Downs > ID for faculitycert, attendid, eventcert []
+        Tri-certificate testing. []
+        */
         HomeGUI gui = new HomeGUI();
         //SQLProcessor SQLpro = new SQLProcessor();
         gui.open();
