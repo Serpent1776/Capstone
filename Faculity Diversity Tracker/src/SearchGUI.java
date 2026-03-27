@@ -117,6 +117,7 @@ public class SearchGUI extends TemplateGUI {
         this.except.setText("");
         // indexes the query via making queries with SQL to find the element (by the query)
         String searchQuery = queryBox.getText();
+        DataChecker.CheckString(searchQuery);
         String result = "";
         String type = (String) searchTypeSelector.getSelectedItem();
         /*
