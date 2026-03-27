@@ -5,6 +5,7 @@ public class FDTDriver {
         To implement after milestone 5: 
         Drop Downs > ID for faculitycert, attendid, eventcert []
         Tri-certificate testing. []
+        Button size and coloring for all GUIs: []
         */
         HomeGUI gui = new HomeGUI();
         //SQLProcessor SQLpro = new SQLProcessor();

@@ -3,20 +3,37 @@ import java.awt.*;
 import java.awt.event.*;
 public class SearchGUI extends TemplateGUI {
     String[] searchTypes;
+    String[] panelTypes;
     JComboBox<String> searchTypeSelector;
-    JButton confirm;
-    JPanel scrollPanel;
+    JComboBox<String> panelSwitcher;
+    JButton confirmButton;
+    JPanel mainPanel;
+    JPanel memberPanel;
+    JPanel eventPanel;
+    JPanel certPanel;
     JScrollPane searchResults;
     JTextField queryBox;
     JTextArea resultTemplate;
     GridBagConstraints gbc;
-    public SearchGUI() {
+    SQLProcessor sqlPro;
+    JLabel except;
+    public SearchGUI() throws Exception {
         super("Searching");
-        this.searchTypes = new String[7];
+        this.searchTypes = new String[3];
         this.searchTypes[0] = "Faculty Member";
         this.searchTypes[1] = "Event";
         this.searchTypes[2] = "Certificate";
         this.searchTypeSelector = new JComboBox<String>(searchTypes);
+        this.panelTypes = new String[4];
+        this.panelTypes[0] = "Main Results";
+        this.panelTypes[1] = "Faculty Members of Result";
+        this.panelTypes[2] = "Events of Result";
+        this.panelTypes[3] = "Certificates of Result";
+        this.panelSwitcher = new JComboBox<String>(panelTypes);
+        this.sqlPro = new SQLProcessor();
+        this.except = new JLabel();
+        except.setBackground(new Color(255, 200, 200));
+        except.setFont(new Font("Cambria", 2, 24));
         searchTypeSelector.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent selection) {
@@ -27,36 +44,56 @@ public class SearchGUI extends TemplateGUI {
                 }
             }
         });
-        this.scrollPanel = new JPanel();
-        this.searchResults = new JScrollPane(scrollPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        this.mainPanel = new JPanel();
+        this.mainPanel.setLayout(new GridBagLayout());
+        this.searchResults = new JScrollPane(mainPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        this.memberPanel = new JPanel();
+        this.certPanel = new JPanel();
+        this.eventPanel = new JPanel();
         this.searchResults.setPreferredSize(new Dimension(1000, 850));
         this.searchResults.getVerticalScrollBar().setPreferredSize(new Dimension(20, 0));
         this.searchResults.setAutoscrolls(true);
+        this.panelSwitcher.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent panelSelection) {
+                panelSwitch();
+            }
+        });
         this.queryBox = new JTextField();
         this.queryBox.setPreferredSize(new Dimension(1000, 20));
         this.queryBox.setFont(new Font("Cambria", 4, 16));
         //this.queryBox.setLineWrap(true);
-        this.confirm = new JButton("confirm");
-        confirm.addActionListener(new ActionListener() {
+        this.confirmButton = new JButton("confirm");
+        this.confirmButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent pressed) {
-                confirmSearch();
+                removeAll();
+                try {
+                    confirmSearch();
+                } catch(Exception e) {
+                    resultNotFound();
+                }
             }
         });
         super.window.setLayout(new GridBagLayout());
         this.gbc = new GridBagConstraints();
         this.gbc.insets = new Insets(5, 5, 5, 5);
         gbc.gridy = 0;
-        gbc.gridx = 1;
+        gbc.gridx = 0;
+        super.window.getContentPane().add(except, gbc);
+        gbc.gridx++;
         super.window.getContentPane().add(searchTypeSelector, gbc);
+        gbc.gridy++;
+        super.window.getContentPane().add(panelSwitcher, gbc);
         gbc.gridx--;
         super.window.getContentPane().add(searchResults, gbc);
         gbc.gridy++;
         super.window.getContentPane().add(queryBox, gbc);
         gbc.gridx++;
-        super.window.getContentPane().add(confirm, gbc);
+        super.window.getContentPane().add(confirmButton, gbc);
         this.resultTemplate = new JTextArea();
-        this.resultTemplate.setPreferredSize(new Dimension(1000, 0));
-        this.resultTemplate.setBounds(1000, 850, 1000, 850);
+        //this.resultTemplate.setPreferredSize(new Dimension(1000, 0));
+        //this.resultTemplate.setBounds(1000, 850, 1000, 850);
         this.resultTemplate.setFont(new Font("Cambria", 4, 24));
         this.resultTemplate.setBackground(null);
         this.resultTemplate.setFocusable(false);
@@ -74,11 +111,12 @@ public class SearchGUI extends TemplateGUI {
                 searchTypeSelector.setSelectedItem("Faculty Member");
         }
     }
-    public String confirmSearch() {
+    public void confirmSearch() throws Exception {
+        this.except.setText("");
         // indexes the query via making queries with SQL to find the element (by the query)
-        @SuppressWarnings("unused")
         String searchQuery = queryBox.getText();
         String result = "";
+        String type = (String) searchTypeSelector.getSelectedItem();
         /*
         The search query is the exact "name" of an element within the selected type (from the selector) (case-sensitive)
             For Faculty, this "name" is first name and last name seperated by a space. 
@@ -108,15 +146,258 @@ public class SearchGUI extends TemplateGUI {
             "Not found!" with the selected type. 
                 e.g. "Faculty Member not found!", "Event not found!", "Certificate not found!" 
         */
-        return result;
+        result = sqlPro.findElement(searchQuery, type, "~");
+        String[] resultSplit = result.split("~");
+
+        int id = Integer.parseInt(resultSplit[0]);
+        int employmentID = 0;
+        if(type.equals("Faculty Member") && !(resultSplit[6].equals("null") || resultSplit[6].equals(" ") || resultSplit[6].equals("NULL"))) {
+            employmentID = Integer.parseInt(resultSplit[6]);
+        }
+        String members = "";
+        String certs = "";
+        String events = "";
+        if(type.equals("Event") || type.equals("Certificate")) {
+            members = sqlPro.showFaculty(id, type);
+        }
+        if(type.equals("Event") || type.equals("Faculty Member")) {
+            certs = sqlPro.showCertificates(id, type);
+        }
+        if(type.equals("Faculty Member") || type.equals("Certificate")) {
+        events = sqlPro.showEvents(id, type);
+        }
+        String[] memberz = null;
+        String[] certz = null;
+        String[] eventz = null;
+        if(members != "") {
+            memberz = members.split(",");
+        }
+        if(certs != "") {
+            certz = certs.split(",");
+        }
+        if(events != "") {
+            eventz = events.split(",");
+        } 
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        switch(type) {
+            case "Faculty Member": 
+            JLabel fid = new JLabel("Faculty ID");
+            fid.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(fid, gbc);
+            //illustratedElements[0] = id;
+            gbc.gridx++;
+            JLabel lN = new JLabel("Last Name");
+            lN.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(lN, gbc);
+            //illustratedElements[1] = lN;
+            gbc.gridx++;
+            JLabel fN = new JLabel("First Name");
+            fN.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(fN, gbc);
+            //illustratedElements[2] = fN;
+            gbc.gridx++;
+            JLabel email = new JLabel("Email");
+            email.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(email, gbc);
+            //illustratedElements[3] = email;
+            gbc.gridx++;
+            JLabel role = new JLabel("Role");
+            role.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(role, gbc);
+            //illustratedElements[4] = role;
+            gbc.gridx++;
+            JLabel dept_div = new JLabel("Dept. Division");
+            dept_div.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(dept_div, gbc);
+            //illustratedElements[5] = dept_div;
+            gbc.gridx++;
+            JLabel epID = new JLabel("Employment ID");
+            epID.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(epID, gbc);
+            //illustratedElements[6] = epID;
+            gbc.gridx++;
+            JLabel bIPOC = new JLabel("BIPOC?");
+            bIPOC.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(bIPOC, gbc);
+            //illustratedElements[7] = bIPOC;
+            gbc.gridx++;
+            JLabel gender = new JLabel("Gender");
+            gender.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(gender, gbc);
+            //illustratedElements[8] = gender;
+            break; //7
+            case "Event": 
+            JLabel eID = new JLabel("Event ID");
+            eID.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(eID, gbc);
+            //illustratedElements[0] = eID;
+            gbc.gridx++;
+            JLabel eN = new JLabel("Name of Event");
+            eN.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(eN, gbc);
+            //illustratedElements[1] = eN;
+            gbc.gridx++;
+            JLabel eDate = new JLabel("Event Date");
+            eDate.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(eDate, gbc);
+            //illustratedElements[2] = eDate;
+            gbc.gridx++;
+            JLabel eventType = new JLabel("Event Type");
+            eventType.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(eventType, gbc);
+            //illustratedElements[3] = eventType;
+            gbc.gridx++;
+            JLabel requirement = new JLabel("Requirement");
+            requirement.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(requirement, gbc);
+            //illustratedElements[4] = requirement;
+            gbc.gridx++;
+            JLabel notes = new JLabel("notes");
+            notes.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(notes, gbc);
+            //illustratedElements[5] = notes;
+            break; //5
+            case "Certificate":
+            JLabel certID = new JLabel("Certificate ID");
+            certID.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(certID, gbc);
+            //illustratedElements[0] = certID;
+            gbc.gridx++;
+            JLabel noc = new JLabel("Name of Certificate");
+            noc.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(noc, gbc);
+            //illustratedElements[1] = noc;
+            gbc.gridx++;
+            JLabel cT = new JLabel("Certificate Type");
+            cT.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(cT, gbc);  
+            //illustratedElements[2] = cT;
+            break; //2
+        }
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        for (String s : resultSplit) {
+            JTextArea facultyArea = new JTextArea(s);
+            //facultyArea.setPreferredSize(resultTemplate.getPreferredSize());
+            //facultyArea.setBounds(resultTemplate.getBounds());
+            facultyArea.setFont(resultTemplate.getFont());
+            facultyArea.setBackground(null);
+            facultyArea.setFocusable(false);
+            facultyArea.setEditable(false);
+            mainPanel.add(facultyArea, gbc);
+            gbc.gridx++;
+        }
+        String[] emp = null;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        if(employmentID != 0) {
+            JLabel appID = new JLabel("Application ID");
+            appID.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(appID, gbc); 
+            //illustratedElements[1] = appID;
+            gbc.gridx++;
+            JLabel desc = new JLabel("Description");
+            desc.setFont(new Font("Cambria Bold", 8, 24));
+            mainPanel.add(desc, gbc); 
+            //illustratedElements[2] = desc;
+            gbc.gridy++;
+            gbc.gridx = 0;
+            emp = sqlPro.showEmployment(employmentID, "~").split("~");
+            for(String es: emp) {
+                JTextArea employmentArea = new JTextArea(es);
+                employmentArea.setFont(resultTemplate.getFont());
+                employmentArea.setBackground(null);
+                employmentArea.setFocusable(false);
+                employmentArea.setEditable(false);
+                mainPanel.add(employmentArea, gbc);
+                gbc.gridx++;
+            }
+            gbc.gridy++;
+            gbc.gridx = 0;
+            switch(type) {
+                case "Faculty Member":
+                //certs then events
+                String certR = "Certificates: ";
+                if(certz == null) {certR += "None";} else if(certz.length != 0) {
+                for(int i = 0; i < certz.length; i++) {
+                    String s = certz[i];
+                    if(i < certz.length - 1) {s += ", ";}
+                    certR += s;
+                }
+                } else {certR += "None";}
+                JTextArea certificateResults = new JTextArea(certR);
+                certificateResults.setFont(resultTemplate.getFont());
+                //certificateResults.setPreferredSize(new Dimension(1000, 0));
+                certificateResults.setBounds(0, 0, 980, 20);
+                certificateResults.setBackground(null);
+                certificateResults.setFocusable(false);
+                certificateResults.setEditable(false);
+                certificateResults.setWrapStyleWord(true);
+                certPanel.add(certificateResults);
+                String eventR = "Events: ";
+                if(eventz == null) {eventR += "None";} else if(eventz.length != 0) {
+                for(int i = 0; i < eventz.length; i++) {
+                    String s = eventz[i];
+                    if(i < eventz.length - 1) {s += ", ";}
+                    eventR += s;
+                }
+                } else {eventR += "None";}
+                JTextArea eventResults = new JTextArea(eventR);
+                eventResults.setFont(resultTemplate.getFont());
+                //eventResults.setPreferredSize(new Dimension(1000, 0));
+                eventResults.setBounds(0, 0, 980, 20);
+                eventResults.setBackground(null);
+                eventResults.setFocusable(false);
+                eventResults.setEditable(false);
+                eventResults.setLineWrap(true);
+                eventResults.setWrapStyleWord(true);
+                eventPanel.add(eventResults);
+                break;
+                case "Event": 
+                
+                break;  
+                case "Certificate":
+
+                break;
+            }
+        }
+        
+       this.searchResults.setViewportView(mainPanel);
     }
     public void removeAll() {
-        this.scrollPanel.removeAll();
+        this.mainPanel.removeAll();
+        this.certPanel.removeAll();
+        this.eventPanel.removeAll();
+        this.memberPanel.removeAll();
+        this.searchResults.setViewportView(mainPanel);
     }
     public JFrame getSearchWindow() {
         return super.window;
     }
     public String getToBeSearchedType() {
         return (String) searchTypeSelector.getSelectedItem();
+    }
+    public void panelSwitch() {
+        String type = (String) this.panelSwitcher.getSelectedItem();
+        switch (type) {
+            case "Main Results":
+                this.searchResults.setViewportView(mainPanel);
+                break;
+            case "Faculty Members of Result":
+                this.searchResults.setViewportView(memberPanel);
+                break;
+            case "Events of Result":
+                this.searchResults.setViewportView(eventPanel);
+                break;
+            case "Certificates of Result":
+                this.searchResults.setViewportView(certPanel);
+                break;
+            default:
+                break;
+        }
+    }
+    public void resultNotFound() {
+       this.except.setText(searchTypeSelector.getSelectedItem() + " not found!");
     }
 }

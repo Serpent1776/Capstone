@@ -662,4 +662,84 @@ public class SQLProcessor {
         }
         return result;
     }
+    public String findElement(String query, String type, String splitter) throws Exception {
+        String results = "";
+        switch(type) {
+        case "Faculty Member": 
+            String[] splitted = query.split(" ");
+            statement = conn.prepareStatement("select * from faculty where firstName = \"" + splitted[0] + "\" and lastName = \"" + splitted[1] + "\"");
+            rSet = statement.executeQuery();
+            this.index = 0;
+            while(rSet.next()) {
+                results += this.rSet.getString(1) + splitter;
+                results += this.rSet.getString(2) + splitter;
+                results += this.rSet.getString(3) + splitter;
+                results += this.rSet.getString(4) + splitter;
+                results += this.rSet.getString(5) + splitter;
+                results += this.rSet.getString(6) + splitter;
+                results += this.rSet.getString(7) + splitter;
+                results += this.rSet.getString(8) + splitter;
+                if(this.rSet.getString(9).equals("")) {
+                    results += " ";
+                } else {
+                    results += this.rSet.getString(9);
+                }
+                this.index++;
+                //results += "\n";
+            }
+        break;//7
+        case "Event": 
+            statement = conn.prepareStatement("");
+            statement.execute();
+        break;//5
+        case "Certificate": 
+            statement = conn.prepareStatement("");
+            statement.execute();
+        }
+        return results;
+    }
+    public String showCertificates(int id, String type) throws Exception {//for faculty and events
+        String results = "";
+        switch(type) {
+            case "Faculty Member":
+            statement = conn.prepareStatement("select certificateName from certificate join facultyCert on id = certID where personID = " + id);
+            rSet = statement.executeQuery();
+            this.index = 0;
+            while(rSet.next()) {
+                results += this.rSet.getString(1) + ",";
+                this.index++;
+            } 
+        }
+        return results;
+    }
+    public String showEmployment(int id, String splitter) throws Exception {//for faculity
+        String results = "";
+        statement = conn.prepareStatement("select ApplicationID, employmentDesc from employment where id = " + id);
+        this.index = 0; 
+        rSet = statement.executeQuery();
+        while(rSet.next()) {
+                results += this.rSet.getString(1) + "~";
+                results += this.rSet.getString(2);
+                this.index++;
+            } 
+        return results;
+    }
+    public String showEvents(int id, String type) throws Exception {//for faculity and certificates
+        String results = "";
+         switch(type) {
+            case "Faculty Member":
+            statement = conn.prepareStatement("select eventName from facultyEvent join attendid on id = eventID where facultyID = " + id);
+            rSet = statement.executeQuery();
+            this.index = 0;
+            while(rSet.next()) {
+                results += this.rSet.getString(1) + ",";
+                this.index++;
+            } 
+        }
+        return results;
+    }
+    public String showFaculty(int id, String type) { //for certificates and events
+         String results = "";
+        return results;
+    }
 }

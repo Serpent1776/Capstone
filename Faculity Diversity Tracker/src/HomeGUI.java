@@ -33,7 +33,7 @@ public class HomeGUI {
         this.frame.setLayout(new GridBagLayout());
         frame.setSize(1500, 1000);
         this.template = new JTextArea();
-        this.template.setPreferredSize(new Dimension(1000, 0));
+        //this.template.setPreferredSize(new Dimension(1000, 0));
         //this.template.setBounds(1000, 850, 1000, 850);
         this.template.setFont(new Font("Cambria", 4, 24));
         this.template.setBackground(null);
@@ -544,7 +544,7 @@ public class HomeGUI {
          for (int i = 0; i < secondSplit.length; i++) {
             for (int u = 0; u < secondSplit[i].length; u++) {
             JTextArea iJTextArea = new JTextArea(secondSplit[i][u]);
-            iJTextArea.setPreferredSize(this.template.getPreferredSize());
+            //iJTextArea.setPreferredSize(this.template.getPreferredSize());
             iJTextArea.setFont(this.template.getFont());
             iJTextArea.setEditable(false);
             iJTextArea.setOpaque(false);
