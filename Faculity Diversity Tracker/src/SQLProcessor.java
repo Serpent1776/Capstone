@@ -689,19 +689,41 @@ public class SQLProcessor {
             }
         break;//7
         case "Event": 
-            statement = conn.prepareStatement("");
-            statement.execute();
+            statement = conn.prepareStatement("select * from facultyevent where eventName = \"" + query + "\"");
+            rSet = statement.executeQuery();
+            while(this.rSet.next() == true) {
+                    results += this.rSet.getString(1) + splitter;
+                    results += this.rSet.getString(2) + splitter;
+                    results += this.rSet.getString(3) + splitter;
+                    results += this.rSet.getString(4) + splitter;
+                    results += this.rSet.getString(5) + splitter;
+                     if(!this.rSet.getString(6).equals("")) {
+                    results += this.rSet.getString(6);
+                    } else {
+                    results += " ";
+                    }
+                    results += "\n";
+                    this.index++;
+            }
         break;//5
         case "Certificate": 
-            statement = conn.prepareStatement("");
-            statement.execute();
+            statement = conn.prepareStatement("select * from certificate where certificateName = \"" + query + "\"");
+            rSet = statement.executeQuery();
+            while(this.rSet.next() == true) {
+                    results += this.rSet.getString(1) + splitter;
+                    results += this.rSet.getString(2) + splitter;
+                    results += this.rSet.getString(3);
+                    this.index++;
+                    //results += "\n";
+                }
+
         }
         return results;
     }
     public String showCertificates(int id, String type) throws Exception {//for faculty and events
         String results = "";
         switch(type) {
-            case "Faculty Member":
+            case "Faculty Member": //join with faculty cert to find certificates of a faculity member
             statement = conn.prepareStatement("select certificateName from certificate join facultyCert on id = certID where personID = " + id);
             rSet = statement.executeQuery();
             this.index = 0;
@@ -709,6 +731,16 @@ public class SQLProcessor {
                 results += this.rSet.getString(1) + ",";
                 this.index++;
             } 
+            break;
+            case "Event": //join with eventCert to find certificate/s linked to an event 
+            statement = conn.prepareStatement("select certificateName from certificate join eventCert on id = certID where eventID = " + id);
+            rSet = statement.executeQuery();
+            this.index = 0;
+            while(rSet.next()) {
+                results += this.rSet.getString(1) + ",";
+                this.index++;
+            }
+            break;
         }
         return results;
     }
@@ -727,19 +759,50 @@ public class SQLProcessor {
     public String showEvents(int id, String type) throws Exception {//for faculity and certificates
         String results = "";
          switch(type) {
-            case "Faculty Member":
+            case "Faculty Member": //attendence join to find events a faculity member attended
             statement = conn.prepareStatement("select eventName from facultyEvent join attendid on id = eventID where facultyID = " + id);
             rSet = statement.executeQuery();
             this.index = 0;
             while(rSet.next()) {
                 results += this.rSet.getString(1) + ",";
                 this.index++;
-            } 
+            }
+            break;
+            case "Certificate": //join with eventCert to find events associated with a certificate
+            statement = conn.prepareStatement("select eventName from facultyEvent join eventCert on id = eventID where certID = " + id);
+            rSet = statement.executeQuery();
+            this.index = 0;
+            while(rSet.next()) {
+                results += this.rSet.getString(1) + ",";
+                this.index++;
+            }
+            break; 
         }
         return results;
     }
-    public String showFaculty(int id, String type) { //for certificates and events
+    public String showFaculty(int id, String type) throws Exception { //for certificates and events
          String results = "";
+         switch(type) {
+            case "Event": //join with attendid to find faculty members that attended the event
+            statement = conn.prepareStatement("select firstName, lastName from faculty join attendid on id = facultyID where eventID = " + id);
+            rSet = statement.executeQuery();
+            this.index = 0;
+            while (rSet.next()) {
+                results += this.rSet.getString(1) + " ";
+                results += this.rSet.getString(2) + ",";
+            }
+            
+            break; 
+            case "Certificate": //join with facultycert to find faculty members that have the certificate
+            statement = conn.prepareStatement("select firstName, lastName from faculty join facultycert on id = personID where certID = " + id);
+            rSet = statement.executeQuery();
+            this.index = 0;
+            while (rSet.next()) {
+                results += this.rSet.getString(1) + " ";
+                results += this.rSet.getString(2) + ",";
+            }
+            break; 
+         }
         return results;
     }
 }

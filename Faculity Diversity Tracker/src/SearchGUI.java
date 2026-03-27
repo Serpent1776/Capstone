@@ -107,11 +107,13 @@ public class SearchGUI extends TemplateGUI {
             case "Event":
             case "Certificate":
                 searchTypeSelector.setSelectedItem(type);
+            break;
             default:
                 searchTypeSelector.setSelectedItem("Faculty Member");
         }
     }
     public void confirmSearch() throws Exception {
+        panelSwitcher.setSelectedItem("Main Results");
         this.except.setText("");
         // indexes the query via making queries with SQL to find the element (by the query)
         String searchQuery = queryBox.getText();
@@ -148,8 +150,25 @@ public class SearchGUI extends TemplateGUI {
         */
         result = sqlPro.findElement(searchQuery, type, "~");
         String[] resultSplit = result.split("~");
-
-        int id = Integer.parseInt(resultSplit[0]);
+        String[][] resultSplit2D = null;
+        if(type.equals("Event") && resultSplit.length > 6) {
+            resultSplit = result.split("\n");
+            String[][] resultSplitTemp = new String[resultSplit.length][5];
+            for (int i = 0; i < resultSplit.length; i++) {
+                resultSplitTemp[i] = resultSplit[i].split("~");
+            }
+            resultSplit2D = resultSplitTemp;
+        }
+        int id = 0;
+        int[] ids = null;
+        if(!type.equals("Event") || resultSplit2D == null) {
+            id = Integer.parseInt(resultSplit[0]);
+        } else {
+            ids = new int[resultSplit2D.length];
+            for (int i = 0; i < ids.length; i++) {
+                ids[i] = Integer.parseInt(resultSplit2D[i][0]);
+            }
+        }
         int employmentID = 0;
         if(type.equals("Faculty Member") && !(resultSplit[6].equals("null") || resultSplit[6].equals(" ") || resultSplit[6].equals("NULL"))) {
             employmentID = Integer.parseInt(resultSplit[6]);
@@ -157,18 +176,32 @@ public class SearchGUI extends TemplateGUI {
         String members = "";
         String certs = "";
         String events = "";
+        String[] memberz = null;
+        String[] certz = null;
+        String[] eventz = null;
         if(type.equals("Event") || type.equals("Certificate")) {
-            members = sqlPro.showFaculty(id, type);
+            if(id != 0) {
+                members = sqlPro.showFaculty(id, type);
+            } else {
+                memberz = new String[resultSplit2D.length];
+                for(int i = 0; i < resultSplit2D.length; i++) {
+                    memberz[i] = sqlPro.showFaculty(ids[i], type);
+                }
+            }
         }
         if(type.equals("Event") || type.equals("Faculty Member")) {
+            if(id != 0) {
             certs = sqlPro.showCertificates(id, type);
+            } else {
+                certz = new String[resultSplit2D.length];
+                for(int i = 0; i < resultSplit2D.length; i++) {
+                    certz[i] = sqlPro.showCertificates(ids[i], type);
+                }
+            }
         }
         if(type.equals("Faculty Member") || type.equals("Certificate")) {
         events = sqlPro.showEvents(id, type);
         }
-        String[] memberz = null;
-        String[] certz = null;
-        String[] eventz = null;
         if(members != "") {
             memberz = members.split(",");
         }
@@ -277,17 +310,33 @@ public class SearchGUI extends TemplateGUI {
         }
         gbc.gridx = 0;
         gbc.gridy = 1;
-        for (String s : resultSplit) {
-            JTextArea facultyArea = new JTextArea(s);
-            //facultyArea.setPreferredSize(resultTemplate.getPreferredSize());
-            //facultyArea.setBounds(resultTemplate.getBounds());
-            facultyArea.setFont(resultTemplate.getFont());
-            facultyArea.setBackground(null);
-            facultyArea.setFocusable(false);
-            facultyArea.setEditable(false);
-            mainPanel.add(facultyArea, gbc);
-            gbc.gridx++;
+        if(!type.equals("Event") || id != 0) {
+            for (String s : resultSplit) {
+                JTextArea facultyArea = new JTextArea(s);
+                //facultyArea.setPreferredSize(resultTemplate.getPreferredSize());
+                //facultyArea.setBounds(resultTemplate.getBounds());
+                facultyArea.setFont(resultTemplate.getFont());
+                facultyArea.setBackground(null);
+                facultyArea.setFocusable(false);
+                facultyArea.setEditable(false);
+                mainPanel.add(facultyArea, gbc);
+                gbc.gridx++;
         }
+     } else {
+        for(String[] sArr: resultSplit2D) {
+            gbc.gridx = 0;
+            for(String s: sArr) {
+                JTextArea eventArea = new JTextArea(s);
+                eventArea.setFont(resultTemplate.getFont());
+                eventArea.setBackground(null);
+                eventArea.setFocusable(false);
+                eventArea.setEditable(false);
+                mainPanel.add(eventArea, gbc);
+                gbc.gridx++;
+            }
+            gbc.gridy++;
+        }
+    }
         String[] emp = null;
         gbc.gridx = 0;
         gbc.gridy++;
@@ -315,10 +364,13 @@ public class SearchGUI extends TemplateGUI {
             }
             gbc.gridy++;
             gbc.gridx = 0;
+        }
+            String memberR = "";
+            String eventR = "";
+            String certR = "";
             switch(type) {
-                case "Faculty Member":
-                //certs then events
-                String certR = "Certificates: ";
+                case "Faculty Member": //certs then events
+                certR = "Certificates: ";
                 if(certz == null) {certR += "None";} else if(certz.length != 0) {
                 for(int i = 0; i < certz.length; i++) {
                     String s = certz[i];
@@ -335,7 +387,7 @@ public class SearchGUI extends TemplateGUI {
                 certificateResults.setEditable(false);
                 certificateResults.setWrapStyleWord(true);
                 certPanel.add(certificateResults);
-                String eventR = "Events: ";
+                eventR = "Events: ";
                 if(eventz == null) {eventR += "None";} else if(eventz.length != 0) {
                 for(int i = 0; i < eventz.length; i++) {
                     String s = eventz[i];
@@ -354,15 +406,110 @@ public class SearchGUI extends TemplateGUI {
                 eventResults.setWrapStyleWord(true);
                 eventPanel.add(eventResults);
                 break;
-                case "Event": 
-                
+                case "Event": // Certificate/s then Faculty members
+                certR = "Certificates linked to Event: ";
+                if(id != 0) {
+                if(certz == null) {certR += "None";} else if(certz.length != 0) {
+                for(int i = 0; i < certz.length; i++) {
+                    String s = certz[i];
+                    if(i < certz.length - 1) {s += ", ";}
+                    certR += s;
+                }
+                } else {certR += "None";}
+                } else {
+                certR = "";
+                for(int i = 0; i < certz.length; i++) {
+                    certR += "Certificates linked to Event " + (i + 1) + ": ";
+                    if(certz[i] == "") {certR += "No one.";} else if(certz[i].length() != 0) {
+                        String[] memberSpl = certz[i].split(",");
+                    for(int u = 0; u < memberSpl.length; u++) {
+                        String s = memberSpl[u];
+                        if(u < memberSpl.length - 1) {s += ", ";}
+                        certR += s; 
+                    }
+                } else {certR += "No one.";}
+                    certR += "\n";
+                }
+            }
+                JTextArea certificateResultz = new JTextArea(certR);
+                certificateResultz.setFont(resultTemplate.getFont());
+                //certificateResults.setPreferredSize(new Dimension(1000, 0));
+                certificateResultz.setBounds(0, 0, 980, 20);
+                certificateResultz.setBackground(null);
+                certificateResultz.setFocusable(false);
+                certificateResultz.setEditable(false);
+                certificateResultz.setWrapStyleWord(true);
+                certPanel.add(certificateResultz);
+                memberR = "People who attended the event: ";
+                if(id != 0) {
+                if(memberz == null) {memberR += "No one.";} else if(memberz.length != 0) {
+                    for(int i = 0; i < memberz.length; i++) {
+                        String s = memberz[i];
+                        if(i < memberz.length - 1) {s += ", ";}
+                        memberR += s; 
+                    }
+                } else {memberR += "No one.";}
+                } else {
+                    memberR = "";
+                    for(int i = 0; i < memberz.length; i++) {
+                        memberR += "People who attended Event " + (i + 1) + ": ";
+                        if(memberz[i] == "") {memberR += "No one.";} else if(memberz[i].length() != 0) {
+                        String[] memberSpl = memberz[i].split(",");
+                    for(int u = 0; u < memberSpl.length; u++) {
+                        String s = memberSpl[u];
+                        if(u < memberSpl.length - 1) {s += ", ";}
+                        memberR += s; 
+                    }
+                } else {memberR += "No one.";}
+                    memberR += "\n";
+                }
+                }
+                JTextArea memberResults = new  JTextArea(memberR);
+                memberResults.setFont(resultTemplate.getFont());
+                memberResults.setBounds(0, 0, 980, 20);
+                memberResults.setBackground(null);
+                memberResults.setFocusable(false);
+                memberResults.setEditable(false);
+                memberResults.setWrapStyleWord(true);
+                memberPanel.add(memberResults);
                 break;  
-                case "Certificate":
-
+                case "Certificate": // Faculty members then Events
+                memberR = "People who have this certificate: ";
+                if(memberz == null) {memberR += "No one.";} else if(memberz.length != 0) {
+                    for(int i = 0; i < memberz.length; i++) {
+                        String s = memberz[i];
+                        if(i < memberz.length - 1) {s += ", ";}
+                        memberR += s; 
+                    }
+                } else {memberR += "No one.";}
+                JTextArea memberResultz = new  JTextArea(memberR);
+                memberResultz.setFont(resultTemplate.getFont());
+                memberResultz.setBounds(0, 0, 980, 20);
+                memberResultz.setBackground(null);
+                memberResultz.setFocusable(false);
+                memberResultz.setEditable(false);
+                memberResultz.setWrapStyleWord(true);
+                memberPanel.add(memberResultz);
+                eventR = "Events linked to this certificate: ";
+                if(eventz == null) {eventR += "None";} else if(eventz.length != 0) {
+                for(int i = 0; i < eventz.length; i++) {
+                    String s = eventz[i];
+                    if(i < eventz.length - 1) {s += ", ";}
+                    eventR += s;
+                }
+                } else {eventR += "None";}
+                JTextArea eventResultz = new JTextArea(eventR);
+                eventResultz.setFont(resultTemplate.getFont());
+                //eventResults.setPreferredSize(new Dimension(1000, 0));
+                eventResultz.setBounds(0, 0, 980, 20);
+                eventResultz.setBackground(null);
+                eventResultz.setFocusable(false);
+                eventResultz.setEditable(false);
+                eventResultz.setLineWrap(true);
+                eventResultz.setWrapStyleWord(true);
+                eventPanel.add(eventResultz);
                 break;
             }
-        }
-        
        this.searchResults.setViewportView(mainPanel);
     }
     public void removeAll() {

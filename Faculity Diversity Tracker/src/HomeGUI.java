@@ -352,6 +352,8 @@ public class HomeGUI {
     }
     public void openSearch() throws Exception {
         this.searchGUI.open();
+        String type = (String) this.showTypes.getSelectedItem();
+        searchGUI.setSearchTypeOnSelector(type);
         
     }
     public void showDataType(String selectedType) throws Exception {
