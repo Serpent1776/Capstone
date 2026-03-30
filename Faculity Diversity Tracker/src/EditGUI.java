@@ -78,8 +78,8 @@ public class EditGUI extends TemplateGUI {
                 try {
                 setExceptionMessenge("");
                 confirmEdits();
-                } catch(Exception e) {
-                    setExceptionMessenge(e.getMessage());
+                } catch(Exception ex) {
+                     if(ex instanceof FDTException) {setExceptionMessenge(ex.getMessage());}
                 }
             }
         });

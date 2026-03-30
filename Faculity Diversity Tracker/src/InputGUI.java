@@ -91,7 +91,7 @@ public class InputGUI {
                 DataChecker.checkData(doubleDimString, inputType);
                 SQLpro.add(inputType, doubleDimString);
                 } catch (Exception ex) {
-                    setExceptionMessenge(ex.getMessage());
+                    if(ex instanceof FDTException) {setExceptionMessenge(ex.getMessage());}
                 }
             }
 

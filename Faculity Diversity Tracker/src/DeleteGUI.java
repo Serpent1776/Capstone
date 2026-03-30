@@ -37,7 +37,7 @@ public class DeleteGUI extends TemplateGUI {
                 setExceptionMessenge("");
                 setCheckBoxes();
                 } catch (Exception e) {
-                    setExceptionMessenge(e.getMessage());
+                     if(e instanceof FDTException) {setExceptionMessenge(e.getMessage());}
                 }
             }
         });
@@ -67,7 +67,7 @@ public class DeleteGUI extends TemplateGUI {
                 setExceptionMessenge("");
                 deleteChecked();
                 } catch (Exception ex) {
-                    setExceptionMessenge(ex.getMessage());
+                     if(ex instanceof FDTException) {setExceptionMessenge(ex.getMessage());}
                 }
             }
         });

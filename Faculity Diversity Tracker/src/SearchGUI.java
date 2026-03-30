@@ -71,7 +71,7 @@ public class SearchGUI extends TemplateGUI {
                 try {
                     confirmSearch();
                 } catch(Exception e) {
-                    resultNotFound();
+                    if(e instanceof FDTException) {setExceptText(e.getMessage());} else {resultNotFound();}
                 }
             }
         });
@@ -547,5 +547,8 @@ public class SearchGUI extends TemplateGUI {
     }
     public void resultNotFound() {
        this.except.setText(searchTypeSelector.getSelectedItem() + " not found!");
+    }
+    public void setExceptText(String s) {
+        this.except.setText(s);
     }
 }
