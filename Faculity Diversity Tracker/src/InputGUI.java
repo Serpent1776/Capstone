@@ -31,7 +31,7 @@ public class InputGUI {
         this.inputSizes[2] = "10";
         this.dropDownSize = new JComboBox<String>(this.inputSizes);
         this.dropDownSize.setPreferredSize(new Dimension(50, 20));
-        this.dropDownSize.setFont(new Font("Cambria", 4, 16));
+        this.dropDownSize.setFont(new Font("Cambria Bold", 4, 16));
         this.dropDownSize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -54,7 +54,7 @@ public class InputGUI {
         this.inputTypes[6] = "Certificate & Event"; //2
         this.dropDownType = new JComboBox<String>(this.inputTypes);
         this.dropDownType.setPreferredSize(new Dimension(175, 20));
-        this.dropDownType.setFont(new Font("Cambria", 4, 16));
+        this.dropDownType.setFont(new Font("Cambria Bold", 4, 16));
         this.dropDownType.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
