@@ -6,7 +6,7 @@ public class SearchGUI extends TemplateGUI {
     String[] panelTypes;
     JComboBox<String> searchTypeSelector;
     JComboBox<String> panelSwitcher;
-    JButton confirmButton;
+    JButton searchButton;
     JPanel mainPanel;
     JPanel memberPanel;
     JPanel eventPanel;
@@ -24,16 +24,18 @@ public class SearchGUI extends TemplateGUI {
         this.searchTypes[1] = "Event";
         this.searchTypes[2] = "Certificate";
         this.searchTypeSelector = new JComboBox<String>(searchTypes);
+        this.searchTypeSelector.setFont(new Font("Cambria Bold", 4, 16));
         this.panelTypes = new String[4];
         this.panelTypes[0] = "Main Results";
         this.panelTypes[1] = "Faculty Members of Result";
         this.panelTypes[2] = "Events of Result";
         this.panelTypes[3] = "Certificates of Result";
         this.panelSwitcher = new JComboBox<String>(panelTypes);
+        this.panelSwitcher.setFont(new Font("Cambria Bold", 4, 16));
         this.sqlPro = new SQLProcessor();
         this.except = new JLabel();
         except.setBackground(new Color(255, 200, 200));
-        except.setFont(new Font("Cambria", 2, 24));
+        except.setFont(new Font("Cambria Bold", 4, 24));
         searchTypeSelector.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent selection) {
@@ -60,11 +62,14 @@ public class SearchGUI extends TemplateGUI {
             }
         });
         this.queryBox = new JTextField();
-        this.queryBox.setPreferredSize(new Dimension(1000, 20));
-        this.queryBox.setFont(new Font("Cambria", 4, 16));
+        this.queryBox.setPreferredSize(new Dimension(1000, 36));
+        this.queryBox.setFont(new Font("Cambria", 4, 24));
         //this.queryBox.setLineWrap(true);
-        this.confirmButton = new JButton("confirm");
-        this.confirmButton.addActionListener(new ActionListener() {
+        this.searchButton = new JButton("Search");
+        this.searchButton.setPreferredSize(new Dimension(110, 36));
+        this.searchButton.setBackground(new Color(200, 200, 255));
+        this.searchButton.setFont(new Font("Cambria", 4, 24));
+        this.searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent pressed) {
                 removeAll();
@@ -90,7 +95,7 @@ public class SearchGUI extends TemplateGUI {
         gbc.gridy++;
         super.window.getContentPane().add(queryBox, gbc);
         gbc.gridx++;
-        super.window.getContentPane().add(confirmButton, gbc);
+        super.window.getContentPane().add(searchButton, gbc);
         this.resultTemplate = new JTextArea();
         //this.resultTemplate.setPreferredSize(new Dimension(1000, 0));
         //this.resultTemplate.setBounds(1000, 850, 1000, 850);

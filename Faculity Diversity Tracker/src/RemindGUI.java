@@ -21,7 +21,7 @@ public class RemindGUI extends TemplateGUI {
         super("Notifications");
         super.window.setSize(500, 700);
         this.notificationText = new JTextArea();
-        this.notificationText.setFont(new Font("Cambria", 4, 16));
+        this.notificationText.setFont(new Font("Cambria", 4, 24));
         this.notificationText.setLineWrap(true);
         this.notificationText.setWrapStyleWord(true);
         this.notificationText.setEditable(false);
@@ -51,7 +51,7 @@ public class RemindGUI extends TemplateGUI {
             }
         });
         super.window.add(export, BorderLayout.SOUTH);
-
+        updateNotifications();
     }
     public void updateEventList() throws Exception {
         this.eventsOfCertificate = sQLPro.showJoinedEventCertEvent().split("\n");
@@ -241,6 +241,9 @@ public class RemindGUI extends TemplateGUI {
         String notificationSet = "";
         for (String note : notifications) {
             notificationSet += note + "\n";
+        }
+        if(notificationSet.equals("")) {
+            notificationSet = "There are no notifications to display for right now.";
         }
         this.notificationText.setText(notificationSet);
         this.notifscroll.setViewportView(notificationText);

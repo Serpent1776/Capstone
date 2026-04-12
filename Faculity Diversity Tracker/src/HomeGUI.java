@@ -296,6 +296,7 @@ public class HomeGUI {
         this.inputTypes[5] = "Event Attendence"; //2
         this.inputTypes[6] = "Certificate & Event"; //2
         this.showTypes = new JComboBox<String>(inputTypes);
+        this.showTypes.setFont(new Font("Cambria Bold", 4, 16));
         this.showTypes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent selection) {

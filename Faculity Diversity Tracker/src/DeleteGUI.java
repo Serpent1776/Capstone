@@ -52,12 +52,15 @@ public class DeleteGUI extends TemplateGUI {
         super.window.getContentPane().add(this.deletionSpot, gbc);
         this.gbc.gridy = 0; 
         this.exceptionMessenger = new JLabel();
+        this.exceptionMessenger.setFont(new Font("Cambria Bold", 4, 24));
         super.window.getContentPane().add(this.exceptionMessenger, gbc);
         this.gbc.gridx = 1;
         super.window.getContentPane().add(this.typeSelectionBox, gbc);
         this.checkBoxesonScreen = new ArrayList<JCheckBox>();
         this.sQLpro = new SQLProcessor();
-        this.confirm = new JButton("Confirm");
+        this.confirm = new JButton("Confirm Deletions");
+        this.confirm.setBackground(new Color(255, 200, 200));
+        this.confirm.setFont(new Font("Cambria", 4, 24));
         gbc.gridx = 0;
         gbc.gridy = 2;
         this.confirm.addActionListener(new ActionListener() {
@@ -73,6 +76,9 @@ public class DeleteGUI extends TemplateGUI {
         });
         super.window.getContentPane().add(confirm, gbc);
         this.deleteAll = new JButton("Delete All");
+        this.deleteAll.setBackground(new Color(255, 0, 0));
+        this.deleteAll.setForeground(new Color(255, 255, 255));
+        this.deleteAll.setFont(new Font("Cambria", 4, 24));
         this.deleteAll.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {

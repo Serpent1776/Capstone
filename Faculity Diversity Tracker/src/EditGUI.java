@@ -63,6 +63,7 @@ public class EditGUI extends TemplateGUI {
         super.window.getContentPane().add(editTypeSelector, gbc);
         this.gbc.gridx = 0;
         this.exceptionMessenger = new JLabel();
+        this.exceptionMessenger.setFont(new Font("Cambria Bold", 4, 24));
         super.window.getContentPane().add(this.exceptionMessenger, gbc);
         this.scrollGlass = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.scrollGlass.setPreferredSize(new Dimension(1000, 850));
@@ -71,7 +72,10 @@ public class EditGUI extends TemplateGUI {
         this.gbc.gridx = 0;
         this.gbc.gridy = 1;
         super.window.getContentPane().add(scrollGlass, gbc);
-        this.confirm = new JButton("Confirm");
+        this.confirm = new JButton("Confirm Edits");
+        this.confirm.setPreferredSize(new Dimension(180, 36));
+        this.confirm.setFont(new Font("Cambria", 4, 24));
+        this.confirm.setBackground(new Color(255, 200, 200));
         this.confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -84,6 +88,7 @@ public class EditGUI extends TemplateGUI {
             }
         });
         this.gbc.gridy = 2;
+        this.gbc.gridx = 1;
         super.window.getContentPane().add(confirm, gbc);
     }
     public void setTypeonSelector(String type) throws Exception {

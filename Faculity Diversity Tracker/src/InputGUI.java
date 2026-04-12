@@ -76,12 +76,13 @@ public class InputGUI {
             }
         });
         this.inputText = new JTextArea(" ");
-        this.inputText.setPreferredSize(new Dimension(300, 20));
-        this.inputText.setFont(new Font("Cambria", 4, 16));
+        this.inputText.setPreferredSize(new Dimension(300, 36));
+        this.inputText.setFont(new Font("Cambria", 4, 24));
         //this.inputText.setLineWrap(true);
         this.addButton = new JButton("Add");
-        this.addButton.setPreferredSize(new Dimension(60, 36));
-        this.addButton.setFont(new Font("Cambria", 4, 12));
+        this.addButton.setPreferredSize(new Dimension(80, 36));
+        this.addButton.setBackground(new Color(200, 255, 200));
+        this.addButton.setFont(new Font("Cambria", 4, 24));
         this.addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -103,8 +104,8 @@ public class InputGUI {
         this.inputWindow.add(dropDownSize, this.gbc);
         this.gbc.gridx = 2;
         this.inputWindow.add(dropDownType, this.gbc);
-        this.gbc.gridy = 1500;
-        this.gbc.gridx = 1000;
+        this.gbc.gridy = 3;
+        this.gbc.gridx = 1;
         this.inputWindow.add(addButton, this.gbc);
         this.inputTexts = new JTextArea[10][8];
         this.ddSize = "1";
@@ -115,6 +116,7 @@ public class InputGUI {
         this.scrollWindow.setPreferredSize(new Dimension(1000, 850));
         this.inputWindow.add(scrollWindow, this.gbc);
         this.exceptionMessenger = new JLabel();
+        this.exceptionMessenger.setFont(new Font("Cambria Bold", 4, 24));
         this.gbc.gridy = 0;
         this.inputWindow.add(this.exceptionMessenger, this.gbc);
         listSummon();
@@ -147,112 +149,138 @@ public class InputGUI {
         switch(this.inputType) {
             case "Faculty Member": 
             JLabel lN = new JLabel("Last Name");
+            lN.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(lN, gbc);
             this.onGui[0] = lN;
             gbc.gridx++;
             JLabel fN = new JLabel("First Name");
             panel.add(fN, gbc);
+            fN.setFont(new Font("Cambria Bold", 4, 24));
             this.onGui[1] = fN;
             gbc.gridx++;
             JLabel email = new JLabel("Email");
+            email.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(email, gbc);
             this.onGui[2] = email;
             gbc.gridx++;
             JLabel role = new JLabel("Role");
+            role.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(role, gbc);
             this.onGui[3] = role;
             gbc.gridx++;
             JLabel dept_div = new JLabel("Dept. Division");
+            dept_div.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(dept_div, gbc);
             this.onGui[4] = dept_div;
             gbc.gridx++;
             JLabel epID = new JLabel("Employment ID");
+            epID.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(epID, gbc);
             this.onGui[5] = epID;
             gbc.gridx++;
             JLabel bIPOC = new JLabel("BIPOC?");
+            bIPOC.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(bIPOC, gbc);
             this.onGui[6] = bIPOC;
             gbc.gridx++;
             JLabel gender = new JLabel("Gender");
+            gender.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(gender, gbc);
             this.onGui[7] = gender;
             break; //7
             case "Event": 
             JLabel eN = new JLabel("Name of Event");
+            eN.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(eN, gbc);
             this.onGui[0] = eN;
             gbc.gridx++;
             JLabel eDate = new JLabel("Event Date");
+            eDate.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(eDate, gbc);
             this.onGui[1] = eDate;
             gbc.gridx++;
             JLabel eventType = new JLabel("Event Type");
+            eventType.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(eventType, gbc);
             this.onGui[2] = eventType;
             gbc.gridx++;
             JLabel requirement = new JLabel("Requirement");
+            requirement.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(requirement, gbc);
             this.onGui[3] = requirement;
             gbc.gridx++;
             JLabel notes = new JLabel("notes");
+            notes.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(notes, gbc);
             this.onGui[4] = notes;
             break; //5
             case "Certificate":
             JLabel noc = new JLabel("Name of Certificate");
+            noc.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(noc, gbc);
             this.onGui[0] = noc;
             gbc.gridx++;
             JLabel cT = new JLabel("Certificate Type");
+            cT.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(cT, gbc);  
             this.onGui[1] = cT;
             break; //2
             case "Employment":
             JLabel appID = new JLabel("Application ID");
+            appID.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(appID, gbc); 
             this.onGui[0] = appID;
             gbc.gridx++;
             JLabel desc = new JLabel("Description");
+            desc.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(desc, gbc); 
             this.onGui[1] = desc;
             break; //2
             case "Faculty & Certificate":
             JLabel lNos = new JLabel("Staff ID");
+            lNos.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(lNos, gbc);
             this.onGui[0] = lNos;
             gbc.gridx++;
             JLabel bDate = new JLabel("Bronze Date");
+            bDate.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(bDate, gbc);
             this.onGui[1] = bDate;
             gbc.gridx++;
             JLabel sDate = new JLabel("Silver Date");
+            sDate.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(sDate, gbc);
             this.onGui[2] = sDate;
             gbc.gridx++;
             JLabel gDate = new JLabel("Gold date");
+            gDate.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(gDate, gbc);
             this.onGui[3] = gDate;
             gbc.gridx++;
             JLabel cName = new JLabel("Certificate ID");
+            cName.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(cName, gbc);  
             this.onGui[4] = cName;
             break; //5
             case "Event Attendence":
             JLabel lNs = new JLabel("Staff ID");
+            lNs.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(lNs, gbc);
             this.onGui[0] = lNs;
             gbc.gridx++;
             JLabel nE = new JLabel("Event ID");
+            nE.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(nE, gbc);
             this.onGui[1] = nE;
             break; //2
             case "Certificate & Event":
             JLabel cne = new JLabel("Certificate ID");
+            cne.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(cne, gbc);
             this.onGui[0] = cne;
             gbc.gridx++;
             JLabel ne = new JLabel("Event ID");
+            ne.setFont(new Font("Cambria Bold", 4, 24));
             panel.add(ne, gbc);
             this.onGui[1] = ne;
             break; //2   
